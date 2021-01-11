@@ -6,22 +6,51 @@ class Gui(QMainWindow):
     def __init__(self, parent=None):
         super(Gui, self).__init__(parent)
 
+        #left panel
+
+        #right panel
         self.data_path_button = QPushButton("Load Data")
+        self.data_path_button.clicked.connect(self.open_data_window)
+
+        #bottom panel
+        self.consolePrint_left = QLineEdit()
+        self.consolePrint_left.setReadOnly(True)
+        self.consolePrint_left.setPlaceholderText('console print')
+        self.consolePrint_left.setMinimumSize(100, 200)
+        self.consoleInput_left = QLineEdit()
+        self.consoleInput_left.setPlaceholderText('console input')
+        self.consolePrint_right = QLineEdit()
+        self.consolePrint_right.setReadOnly(True)
+        self.consolePrint_right.setPlaceholderText('console print')
+        self.consolePrint_right.setMinimumSize(100, 200)
+        self.consoleInput_right = QLineEdit()
+        self.consoleInput_right.setPlaceholderText('console input')
 
         self.prepare_gui()
         self.show()
 
     def prepare_gui(self):
         self.setWindowTitle('inzynierka')
-        self.setFixedSize(800, 700)
+        self.setFixedSize(1200, 1000)
 
-        main_layout = QHBoxLayout()
-        self.main_label = QLabel()
+        left_panel = QGridLayout()
+        left_panel.addWidget(self.data_path_button, 0, 0)
+
         right_panel = QGridLayout()
 
-        right_panel.addWidget(self.data_path_button, 0, 0)
-        self.data_path_button.clicked.connect(self.open_data_window)
-        main_layout.addLayout(right_panel)
+        top_layout = QHBoxLayout()
+        top_layout.addLayout(left_panel)
+        top_layout.addLayout(right_panel)
+
+        bottom_layout = QGridLayout()
+        bottom_layout.addWidget(self.consolePrint_left, 0, 0)
+        bottom_layout.addWidget(self.consolePrint_right, 0, 1)
+        bottom_layout.addWidget(self.consoleInput_left, 1, 0)
+        bottom_layout.addWidget(self.consoleInput_right, 1, 1)
+
+        main_layout = QVBoxLayout()
+        main_layout.addLayout(top_layout)
+        main_layout.addLayout(bottom_layout)
 
         main_widget = QWidget()
         main_widget.setLayout(main_layout)
