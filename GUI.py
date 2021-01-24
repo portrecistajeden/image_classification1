@@ -70,22 +70,18 @@ class Gui(QMainWindow):
         self.botRightGraphCanvas = FigureCanvas(self.botRightGraph)
         self.BRaxis = self.botRightGraphCanvas.figure.subplots()
 
-
         #bottom panel
         self.consolePrint_left = QLineEdit()
         self.consolePrint_left.setReadOnly(True)
         self.consolePrint_left.setPlaceholderText('console print')
         self.consolePrint_left.setMinimumSize(100, 200)
         self.consolePrint_left.setAlignment(Qt.AlignTop)
-        self.consoleInput_left = QLineEdit()
-        self.consoleInput_left.setPlaceholderText('console input')
+
         self.consolePrint_right = QLineEdit()
         self.consolePrint_right.setReadOnly(True)
         self.consolePrint_right.setPlaceholderText('console print')
         self.consolePrint_right.setMinimumSize(100, 200)
         self.consolePrint_right.setAlignment(Qt.AlignTop)
-        self.consoleInput_right = QLineEdit()
-        self.consoleInput_right.setPlaceholderText('console input')
 
         self.trainDir = "C:/Users/piawr/Desktop/image_classification1/minibazka/traintrain"
         self.testDir = "C:/Users/piawr/Desktop/image_classification1/minibazka/testest"
@@ -139,8 +135,6 @@ class Gui(QMainWindow):
         bottom_layout = QGridLayout()
         bottom_layout.addWidget(self.consolePrint_left, 0, 0)
         bottom_layout.addWidget(self.consolePrint_right, 0, 1)
-        bottom_layout.addWidget(self.consoleInput_left, 1, 0)
-        bottom_layout.addWidget(self.consoleInput_right, 1, 1)
 
         main_layout = QGridLayout()
         main_layout.addLayout(top_layout, 0, 0)
@@ -193,6 +187,7 @@ class Gui(QMainWindow):
             simpleCnn = CNN(self.trainDir, self.testDir)
             simpleCnn.accGraph(self.TLaxis)
             self.topLeftGraphCanvas.draw()
+            print('done')
 
     def secondExecuteClick(self):
         if self.secondKNN.isChecked():

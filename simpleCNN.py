@@ -7,7 +7,6 @@ from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 
 # Used to show graphs
-import matplotlib
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -16,7 +15,7 @@ from data_prep import load_data
 
 
 class CNN():
-    def __init__(self, trainDir, testDir, accPlot):
+    def __init__(self, trainDir, testDir):
 
         # Load data form data_prep file
         self.train_data = load_data(trainDir)
@@ -24,7 +23,7 @@ class CNN():
 
         # Useful variables
         # To do: let user change this
-        self.classes = 6
+        self.classes = 1
         self.epochs = 1
         self.width = 100
         self.height = 100
@@ -68,15 +67,12 @@ class CNN():
 
     def accGraph(self, accPlot):
         arr = np.arange(0, self.epochs)
-        plt.style.use("ggplot")
-        plt.figure()
         accPlot.plot(arr, self.history.history["accuracy"], label="train_acc")
         accPlot.plot(arr, self.history.history["val_accuracy"], label="val_acc")
-        accPlot.title("Training accuracy")
-        accPlot.xlabel("epoch #")
-        accPlot.ylabel("accuracy")
+        #accPlot.title("Training accuracy")
+        #accPlot.xlabel("epoch #")
+        #accPlot.ylabel("accuracy")
         accPlot.legend()
-        accPlot.show()
 
 
     def lossGraph(self):
