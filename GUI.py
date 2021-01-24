@@ -187,6 +187,8 @@ class Gui(QMainWindow):
             simpleCnn = CNN(self.trainDir, self.testDir)
             simpleCnn.accGraph(self.TLaxis)
             self.topLeftGraphCanvas.draw()
+            simpleCnn.lossGraph(self.MLaxis)
+            self.midLeftGraphCanvas.draw()
             print('done')
 
     def secondExecuteClick(self):

@@ -23,8 +23,8 @@ class CNN():
 
         # Useful variables
         # To do: let user change this
-        self.classes = 1
-        self.epochs = 1
+        self.classes = 6
+        self.epochs = 10
         self.width = 100
         self.height = 100
 
@@ -75,17 +75,17 @@ class CNN():
         accPlot.legend()
 
 
-    def lossGraph(self):
+    def lossGraph(self, lossPlot):
         arr = np.arange(0, self.epochs)
-        plt.style.use("ggplot")
-        plt.figure()
-        plt.plot(arr, self.history.history["loss"], label="train_loss")
-        plt.plot(arr, self.history.history["val_loss"], label="val_loss")
-        plt.title("Training loss")
-        plt.xlabel("epoch #")
-        plt.ylabel("loss")
-        plt.legend()
-        plt.show()
+        # plt.style.use("ggplot")
+        # plt.figure()
+        lossPlot.plot(arr, self.history.history["loss"], label="train_loss")
+        lossPlot.plot(arr, self.history.history["val_loss"], label="val_loss")
+        # plt.title("Training loss")
+        # plt.xlabel("epoch #")
+        # plt.ylabel("loss")
+        lossPlot.legend()
+        # plt.show()
 
     def predictGraph(self, testDir):
         # To do: move this to data_prep file
