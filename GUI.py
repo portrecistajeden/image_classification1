@@ -44,6 +44,12 @@ class Gui(QMainWindow):
         self.firstExecute = QPushButton('Execute')
         self.firstExecute.clicked.connect(self.firstExecuteClick)
         self.secondExecute = QPushButton('Execute')
+        self.kValue = QLineEdit()
+        self.kValue.setPlaceholderText('k Value')
+        self.kValue.setVisible(False)
+        self.kValue2 = QLineEdit()
+        self.kValue2.setPlaceholderText('k Value')
+        self.kValue2.setVisible(False)
 
         #right panel
         self.topLeftGraph = Figure()
@@ -91,8 +97,8 @@ class Gui(QMainWindow):
 
     def prepare_gui(self):
         self.setWindowTitle('inzynierka')
-        self.setBaseSize(1200, 1000)
-        self.setMinimumSize(1200, 1000)
+        self.setBaseSize(1200, 900)
+        self.setMinimumSize(900, 700)
 
         left_panel = QHBoxLayout()
         left_panel.setAlignment(Qt.AlignTop)
@@ -103,6 +109,7 @@ class Gui(QMainWindow):
         left_checkboxes.addWidget(self.firstKNN)
         left_checkboxes.addWidget(self.firstCustomCNN)
         left_part.addLayout(left_checkboxes)
+        left_part.addWidget(self.kValue)
         left_part.addWidget(self.firstExecute)
         right_part = QVBoxLayout()
         right_part.addWidget(self.secondAlgoLabel)
@@ -111,6 +118,7 @@ class Gui(QMainWindow):
         right_checkboxes.addWidget(self.secondKNN)
         right_checkboxes.addWidget(self.secondCustomCNN)
         right_part.addLayout(right_checkboxes)
+        right_part.addWidget(self.kValue2)
         right_part.addWidget(self.secondExecute)
 
         left_panel.addLayout(left_part)
@@ -147,26 +155,32 @@ class Gui(QMainWindow):
     def uncheckFirst(self, state):
         if state == Qt.Checked:
             if self.sender() == self.firstSimpleCNN:
+                self.kValue.setVisible(False)
                 self.firstKNN.setChecked(False)
                 self.firstCustomCNN.setChecked(False)
                 self.secondSimpleCNN.setChecked(False)
             elif self.sender() == self.firstKNN:
+                self.kValue.setVisible(True)
                 self.firstSimpleCNN.setChecked(False)
                 self.firstCustomCNN.setChecked(False)
                 self.secondKNN.setChecked(False)
             elif self.sender() == self.firstCustomCNN:
+                self.kValue.setVisible(False)
                 self.firstKNN.setChecked(False)
                 self.firstSimpleCNN.setChecked(False)
                 self.secondCustomCNN.setChecked(False)
             elif self.sender() == self.secondSimpleCNN:
+                self.kValue2.setVisible(False)
                 self.secondKNN.setChecked(False)
                 self.secondCustomCNN.setChecked(False)
                 self.firstSimpleCNN.setChecked(False)
             elif self.sender() == self.secondKNN:
+                self.kValue2.setVisible(True)
                 self.secondSimpleCNN.setChecked(False)
                 self.secondCustomCNN.setChecked(False)
                 self.firstKNN.setChecked(False)
             else:
+                self.kValue2.setVisible(False)
                 self.secondKNN.setChecked(False)
                 self.secondSimpleCNN.setChecked(False)
                 self.firstCustomCNN.setChecked(False)
