@@ -1,4 +1,5 @@
 from PyQt5.QtCore import Qt
+from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QMainWindow, QGraphicsScene, QGridLayout, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, \
     QLineEdit, QLabel, QTextBrowser, QCheckBox, QAction, QMenu, QFrame, QFileDialog
 
@@ -6,6 +7,7 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from KNN import *
+from data_prep import getNumberOfClasses
 from simpleCNN import *
 
 
@@ -44,12 +46,25 @@ class Gui(QMainWindow):
         self.firstExecute = QPushButton('Execute')
         self.firstExecute.clicked.connect(self.firstExecuteClick)
         self.secondExecute = QPushButton('Execute')
+        self.secondExecute.clicked.connect(self.secondExecuteClick)
+
         self.kValue = QLineEdit()
         self.kValue.setPlaceholderText('k Value')
+        self.kValue.setValidator(QIntValidator())
         self.kValue.setVisible(False)
         self.kValue2 = QLineEdit()
         self.kValue2.setPlaceholderText('k Value')
+        self.kValue2.setValidator(QIntValidator())
         self.kValue2.setVisible(False)
+
+        self.epochs1 = QLineEdit()
+        self.epochs1.setPlaceholderText('epochs')
+        self.epochs1.setValidator(QIntValidator())
+        self.epochs1.setVisible(False)
+        self.epochs2 = QLineEdit()
+        self.epochs2.setPlaceholderText('epochs')
+        self.epochs2.setValidator(QIntValidator())
+        self.epochs2.setVisible(False)
 
         #right panel
         self.topLeftGraph = Figure()
@@ -109,8 +124,9 @@ class Gui(QMainWindow):
         left_checkboxes.addWidget(self.firstKNN)
         left_checkboxes.addWidget(self.firstCustomCNN)
         left_part.addLayout(left_checkboxes)
-        left_part.addWidget(self.kValue)
         left_part.addWidget(self.firstExecute)
+        left_part.addWidget(self.kValue)
+        left_part.addWidget(self.epochs1)
         right_part = QVBoxLayout()
         right_part.addWidget(self.secondAlgoLabel)
         right_checkboxes = QVBoxLayout()
@@ -118,8 +134,9 @@ class Gui(QMainWindow):
         right_checkboxes.addWidget(self.secondKNN)
         right_checkboxes.addWidget(self.secondCustomCNN)
         right_part.addLayout(right_checkboxes)
-        right_part.addWidget(self.kValue2)
         right_part.addWidget(self.secondExecute)
+        right_part.addWidget(self.kValue2)
+        right_part.addWidget(self.epochs2)
 
         left_panel.addLayout(left_part)
         left_panel.addLayout(right_part)
@@ -156,31 +173,43 @@ class Gui(QMainWindow):
         if state == Qt.Checked:
             if self.sender() == self.firstSimpleCNN:
                 self.kValue.setVisible(False)
+                self.epochs1.setVisible(True)
+
                 self.firstKNN.setChecked(False)
                 self.firstCustomCNN.setChecked(False)
                 self.secondSimpleCNN.setChecked(False)
             elif self.sender() == self.firstKNN:
                 self.kValue.setVisible(True)
+                self.epochs1.setVisible(False)
+
                 self.firstSimpleCNN.setChecked(False)
                 self.firstCustomCNN.setChecked(False)
                 self.secondKNN.setChecked(False)
             elif self.sender() == self.firstCustomCNN:
                 self.kValue.setVisible(False)
+                self.epochs1.setVisible(False)
+
                 self.firstKNN.setChecked(False)
                 self.firstSimpleCNN.setChecked(False)
                 self.secondCustomCNN.setChecked(False)
             elif self.sender() == self.secondSimpleCNN:
                 self.kValue2.setVisible(False)
+                self.epochs2.setVisible(True)
+
                 self.secondKNN.setChecked(False)
                 self.secondCustomCNN.setChecked(False)
                 self.firstSimpleCNN.setChecked(False)
             elif self.sender() == self.secondKNN:
                 self.kValue2.setVisible(True)
+                self.epochs2.setVisible(False)
+
                 self.secondSimpleCNN.setChecked(False)
                 self.secondCustomCNN.setChecked(False)
                 self.firstKNN.setChecked(False)
             else:
                 self.kValue2.setVisible(False)
+                self.epochs2.setVisible(False)
+
                 self.secondKNN.setChecked(False)
                 self.secondSimpleCNN.setChecked(False)
                 self.firstCustomCNN.setChecked(False)
@@ -194,22 +223,28 @@ class Gui(QMainWindow):
 
     def firstExecuteClick(self):
         if self.firstKNN.isChecked():
-            knn = KNN(self.trainDir, self.testDir)
-            knn.train()
-            knn.results(1)
+            self.algorithm1 = KNN(self.trainDir, self.testDir)
+            self.algorithm1.train()
+            self.algorithm1.results(1)
         elif self.firstSimpleCNN.isChecked():
-            simpleCnn = CNN(self.trainDir, self.testDir)
-            simpleCnn.accGraph(self.TLaxis)
+            self.algorithm1 = CNN(self.trainDir, self.testDir, int(self.epochs1.text()))
+            self.algorithm1.accGraph(self.TLaxis)
             self.topLeftGraphCanvas.draw()
-            simpleCnn.lossGraph(self.MLaxis)
+            self.algorithm1.lossGraph(self.MLaxis)
             self.midLeftGraphCanvas.draw()
-            print('done')
+
 
     def secondExecuteClick(self):
         if self.secondKNN.isChecked():
-            knn = KNN(self.trainDir, self.testDir)
-            knn.train()
-            knn.results(1)
+            self.algorithm2 = KNN(self.trainDir, self.testDir)
+            self.algorithm2.train()
+            self.algorithm2.results(2)
+        elif self.secondSimpleCNN.isChecked():
+            self.algorithm2 = CNN(self.trainDir, self.testDir, int(self.epochs2.text()))
+            self.algorithm2.accGraph(self.TLaxis)
+            self.topLeftGraphCanvas.draw()
+            self.algorithm2.lossGraph(self.MLaxis)
+            self.midLeftGraphCanvas.draw()
 
 
 class LoadDataWindow(QMainWindow):

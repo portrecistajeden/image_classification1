@@ -11,11 +11,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Used to load data
-from data_prep import load_data
+from data_prep import load_data, getNumberOfClasses
 
 
 class CNN():
-    def __init__(self, trainDir, testDir):
+    def __init__(self, trainDir, testDir, epochs):
 
         # Load data form data_prep file
         self.train_data = load_data(trainDir)
@@ -23,8 +23,8 @@ class CNN():
 
         # Useful variables
         # To do: let user change this
-        self.classes = 6
-        self.epochs = 10
+        self.classes = getNumberOfClasses(trainDir)
+        self.epochs = epochs
         self.width = 100
         self.height = 100
 

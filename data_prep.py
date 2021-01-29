@@ -53,3 +53,6 @@ def load_data_KNN(dirPath):
     labels = np.array(labels, dtype=np.float32)
     return cells, labels
 
+def getNumberOfClasses(dirPath):
+    dirs, files = os.walk(dirPath)
+    return len(dirs[1])
