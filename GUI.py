@@ -7,7 +7,6 @@ from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
 
 from KNN import *
-from data_prep import getNumberOfClasses
 from simpleCNN import *
 
 
@@ -104,8 +103,8 @@ class Gui(QMainWindow):
         self.consolePrint_right.setMinimumSize(100, 200)
         self.consolePrint_right.setAlignment(Qt.AlignTop)
 
-        self.trainDir = "C:/Users/piawr/Desktop/image_classification1/minibazka/traintrain"
-        self.testDir = "C:/Users/piawr/Desktop/image_classification1/minibazka/testest"
+        self.trainDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\training"
+        self.testDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\test"
 
         self.prepare_gui()
         self.show()

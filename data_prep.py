@@ -3,6 +3,7 @@ import numpy as np
 import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
 import os
+from PIL import Image
 
 def load_images(directory):
     data = tf.keras.preprocessing.image_dataset_from_directory(
@@ -33,25 +34,41 @@ def load_data(dirPath):
     return data
 
 def load_data_KNN(dirPath):
-    cells = []
+    data = []
     labels = []
     i = 0
-
     for entry in os.scandir(dirPath):
         path = dirPath + '/' + entry.name
         for entry2 in os.scandir(path):
             imgPath = path + '/' + entry2.name
-            img = cv2.imread(imgPath)
-            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-            cell = gray.flatten()
-            cells.append(cell)
-            #labels.append(entry.name)
+            img = np.array(Image.open(imgPath), dtype=np.float32)
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+            #imgStacked = np.vstack(img).astype(np.float32)
+            #imgStacked = imgStacked.flatten()
+            img = img[:, :, 0]
+            img = img.flatten()
+            data.append(img)
             labels.append(i)
         i = i + 1
 
-    cells = np.array(cells, dtype=np.float32)
+    data = np.array(data, dtype=np.float32)
     labels = np.array(labels, dtype=np.float32)
-    return cells, labels
+    return data, labels
+
+def load_test_KNN(dirPath):
+    data = []
+    for entry in os.scandir(dirPath):
+        path = dirPath + '/' + entry.name
+        for entry2 in os.scandir(path):
+            imgPath = path + '/' + entry2.name
+            img = np.array(Image.open(imgPath), dtype=np.float32)
+            img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+            img = img[:, :, 0]
+            #img = np.vstack(img).astype(np.float32)
+            img = img.flatten()
+            data.append(img)
+    data = np.array(data, dtype=np.float32)
+    return data
 
 def getNumberOfClasses(dirPath):
     dirs, files = os.walk(dirPath)
