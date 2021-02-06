@@ -1,3 +1,4 @@
+import tqdm as tqdm
 from keras.preprocessing.image import ImageDataGenerator
 
 # Used to create model
@@ -55,5 +56,7 @@ class customCNN:
         self.model.summary()
         self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    def customFit(self):
-        pass
+    def customFit(self, epochs):
+        for epoch in range(epochs):
+            print('Epoch %d' % epoch)
+            pbar = tqdm(range(len(self.train_data))) #to jest fancy progress bar, jeszcze ogarnę jak go wyswietlać

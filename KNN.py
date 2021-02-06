@@ -1,11 +1,12 @@
 import cv2
 import numpy as np
-from data_prep import load_data_KNN, load_test_KNN
+from data_prep import *
 
 class KNN():
     def __init__(self, trainDir, testDir):
         self.trainData, self.trainLabels = load_data_KNN(trainDir)
         self.testData = load_test_KNN(testDir)
+        self.testLabels = getTestLabels(testDir)
         self.knn = cv2.ml.KNearest_create()
 
     def train(self):
@@ -18,7 +19,5 @@ class KNN():
         print('neighbours: ', neighbours)
         print('dist: ', dist)
 
-        # matches = result == self.testLabels
-        # correct = np.count_nonzero(matches)
-        # accuracy = correct * 100.0 / result.size
-        # print(accuracy)
+        for res in self.trainLabels:
+            print(res)
