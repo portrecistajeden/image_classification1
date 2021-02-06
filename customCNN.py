@@ -1,4 +1,6 @@
+import keras
 import tqdm as tqdm
+import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
 
 # Used to create model
@@ -57,6 +59,12 @@ class customCNN:
         self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
     def customFit(self, epochs):
+        loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+
         for epoch in range(epochs):
             print('Epoch %d' % epoch)
             pbar = tqdm(range(len(self.train_data))) #to jest fancy progress bar, jeszcze ogarnę jak go wyswietlać
+            for step, (x_batch, y_batch) in enumerate(self.train_data):
+                with tf.GradientTape() as tape:
+                    logits = self.model(x_batch, training=True)
+                    loss_value = loss_fn(y_batch, logits)
