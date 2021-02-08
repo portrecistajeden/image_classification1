@@ -33,6 +33,19 @@ def load_data(dirPath):
 
     return data
 
+def load_dataCustom(dirPath):
+    data = ImageDataGenerator().flow_from_directory(
+        directory = dirPath, #
+        target_size = (100, 100),
+        color_mode = 'rgb',
+        batch_size = 32,
+        class_mode = 'sparse',
+        shuffle = True,
+        seed = 10010
+    )
+
+    return data
+
 def load_data_KNN(dirPath):
     data = []
     labels = []

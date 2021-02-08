@@ -8,6 +8,7 @@ from matplotlib.figure import Figure
 
 from KNN import *
 from simpleCNN import *
+from customCNN import *
 
 
 class Gui(QMainWindow):
@@ -231,6 +232,9 @@ class Gui(QMainWindow):
             self.topLeftGraphCanvas.draw()
             self.algorithm1.lossGraph(self.MLaxis)
             self.midLeftGraphCanvas.draw()
+        elif self.firstCustomCNN.isChecked():
+            self.algorithm1 = customCNN(self.trainDir, self.testDir)
+            # self.algorithm1.
 
 
     def secondExecuteClick(self):
@@ -244,6 +248,8 @@ class Gui(QMainWindow):
             self.topLeftGraphCanvas.draw()
             self.algorithm2.lossGraph(self.MLaxis)
             self.midLeftGraphCanvas.draw()
+        elif self.secondCustomCNN.isChecked():
+            self.algorithm2 = customCNN(self.trainDir, self.testDir)
 
 
 class LoadDataWindow(QMainWindow):
