@@ -52,10 +52,12 @@ class Gui(QMainWindow):
         self.kValue.setPlaceholderText('k Value')
         self.kValue.setValidator(QIntValidator())
         self.kValue.setVisible(False)
+        self.kValue.setText('0')
         self.kValue2 = QLineEdit()
         self.kValue2.setPlaceholderText('k Value')
         self.kValue2.setValidator(QIntValidator())
         self.kValue2.setVisible(False)
+        self.kValue2.setText('0')
 
         self.epochs1 = QLineEdit()
         self.epochs1.setPlaceholderText('epochs')
@@ -92,13 +94,13 @@ class Gui(QMainWindow):
         self.BRaxis = self.botRightGraphCanvas.figure.subplots()
 
         #bottom panel
-        self.consolePrint_left = QLineEdit()
+        self.consolePrint_left = QTextBrowser()
         self.consolePrint_left.setReadOnly(True)
         self.consolePrint_left.setPlaceholderText('console print')
         self.consolePrint_left.setMinimumSize(100, 200)
         self.consolePrint_left.setAlignment(Qt.AlignTop)
 
-        self.consolePrint_right = QLineEdit()
+        self.consolePrint_right = QTextBrowser()
         self.consolePrint_right.setReadOnly(True)
         self.consolePrint_right.setPlaceholderText('console print')
         self.consolePrint_right.setMinimumSize(100, 200)
@@ -225,13 +227,16 @@ class Gui(QMainWindow):
         if self.firstKNN.isChecked():
             self.algorithm1 = KNN(self.trainDir, self.testDir)
             self.algorithm1.train()
-            self.algorithm1.results(1)
+            self.algorithm1.results(int(self.kValue.text()), self.TLaxis, self.consolePrint_left)
+            self.topLeftGraphCanvas.draw()
+
         elif self.firstSimpleCNN.isChecked():
             self.algorithm1 = CNN(self.trainDir, self.testDir, int(self.epochs1.text()))
             self.algorithm1.accGraph(self.TLaxis)
             self.topLeftGraphCanvas.draw()
             self.algorithm1.lossGraph(self.MLaxis)
             self.midLeftGraphCanvas.draw()
+
         elif self.firstCustomCNN.isChecked():
             self.algorithm1 = customCNN(self.trainDir, self.testDir)
             # self.algorithm1.
@@ -241,13 +246,16 @@ class Gui(QMainWindow):
         if self.secondKNN.isChecked():
             self.algorithm2 = KNN(self.trainDir, self.testDir)
             self.algorithm2.train()
-            self.algorithm2.results(2)
+            self.algorithm2.results(int(self.kValue2.text()), self.TRaxis, self.consolePrint_right)
+            self.topLeftGraphCanvas.draw()
+
         elif self.secondSimpleCNN.isChecked():
             self.algorithm2 = CNN(self.trainDir, self.testDir, int(self.epochs2.text()))
             self.algorithm2.accGraph(self.TLaxis)
             self.topLeftGraphCanvas.draw()
             self.algorithm2.lossGraph(self.MLaxis)
             self.midLeftGraphCanvas.draw()
+
         elif self.secondCustomCNN.isChecked():
             self.algorithm2 = customCNN(self.trainDir, self.testDir)
 
