@@ -61,14 +61,12 @@ class CNN():
 
     def lossGraph(self, lossPlot):
         arr = np.arange(0, self.epochs)
-
         lossPlot.plot(arr, self.history.history["loss"], label="train_loss")
         lossPlot.plot(arr, self.history.history["val_loss"], label="val_loss")
         lossPlot.set_title("Training loss")
         lossPlot.set_xlabel("epoch #")
         lossPlot.set_ylabel("loss")
         lossPlot.legend()
-        # plt.show()
 
     # def predictGraph(self, testDir, predictPlot):
     #     # To do: move this to data_prep file

@@ -63,22 +63,23 @@ class CustomCNN:
         self.width = 400
         self.height = 400
 
-        # optimizer = keras.optimizers.Adam()
-        # loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
-        # acc_metric = keras.metrics.SparseCategoricalAccuracy()
-
-        self.createModel()
-        # self.customTraining(epochs, optimizer, loss_fn, acc_metric)
-        # self.customTest(acc_metric)
-        training = CustomFit(self.model)
-        training.compile(
+    def trainModel(self):
+        self.training = CustomFit(self.model)
+        self.training.compile(
             optimizer=keras.optimizers.Adam(),
             loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
             acc_metric=keras.metrics.SparseCategoricalAccuracy(name='accuracy'),
         )
-        training.fit(self.train_data, batch_size=32, epochs=self.epochs)
-        training.evaluate(self.test_data, batch_size=32)
+        self.history = self.training.fit(self.train_data, batch_size=32, epochs=self.epochs)
 
+    def evaluateModel(self):
+        self.training.evaluate(self.test_data, batch_size=32)
+
+    def loadModel(self, path):
+        self.model = tf.keras.models.load_model(path)
+
+    def saveModel(self, path):
+        self.model.save(path)
 
     def createModel(self):
         self.model = Sequential()
@@ -132,12 +133,3 @@ class CustomCNN:
     #     train_acc = acc_metric.result()
     #     print(f"Test accuracy {train_acc}")
     #     acc_metric.reset_states()
-    #
-    # def accGraph(self, accPlot):
-    #     arr = np.arange(0, self.epochs)
-    #     accPlot.plot(arr, self.history.history["accuracy"], label="train_acc")
-    #     accPlot.plot(arr, self.history.history["val_accuracy"], label="val_acc")
-    #     #accPlot.title("Training accuracy")
-    #     #accPlot.xlabel("epoch #")
-    #     #accPlot.ylabel("accuracy")
-    #     accPlot.legend()
