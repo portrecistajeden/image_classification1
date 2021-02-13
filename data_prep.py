@@ -95,8 +95,10 @@ def load_test_KNN(dirPath):
     return data
 
 def getNumberOfClasses(dirPath):
-    dirs, files = os.walk(dirPath)
-    return len(dirs[1])
+    i = 0
+    for entry in os.scandir(dirPath):
+        i += 1
+    return i
 
 def getTestLabels(dirPath):
     classes = []

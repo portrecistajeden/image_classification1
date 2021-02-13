@@ -16,7 +16,6 @@ class KNN():
             accArray = []
             for k in range(1, 16):
                 ret, result, neighbours, dist = self.knn.findNearest(self.testData, k)
-
                 result = result.flatten()
                 result = result.astype(np.int)
                 acc = 0

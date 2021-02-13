@@ -41,22 +41,7 @@ class CNN():
         self.model = Sequential()
 
         self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
-
-        self.model.add(Conv2D(64, (3, 3), activation='relu'))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
-
-        self.model.add(Conv2D(128, (3, 3), activation='relu'))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
-
         self.model.add(Flatten())
-
-        self.model.add(Dense(128, activation='relu'))
-        self.model.add(Dropout(0.5))
-
         self.model.add(Dense(self.classes, activation='softmax'))
 
         self.model.summary()
@@ -69,70 +54,67 @@ class CNN():
         arr = np.arange(0, self.epochs)
         accPlot.plot(arr, self.history.history["accuracy"], label="train_acc")
         accPlot.plot(arr, self.history.history["val_accuracy"], label="val_acc")
-        #accPlot.title("Training accuracy")
-        #accPlot.xlabel("epoch #")
-        #accPlot.ylabel("accuracy")
+        accPlot.set_title("Training accuracy")
+        accPlot.set_xlabel("epoch #")
+        accPlot.set_ylabel("accuracy")
         accPlot.legend()
-
 
     def lossGraph(self, lossPlot):
         arr = np.arange(0, self.epochs)
-        # plt.style.use("ggplot")
-        # plt.figure()
+
         lossPlot.plot(arr, self.history.history["loss"], label="train_loss")
         lossPlot.plot(arr, self.history.history["val_loss"], label="val_loss")
-        # plt.title("Training loss")
-        # plt.xlabel("epoch #")
-        # plt.ylabel("loss")
+        lossPlot.set_title("Training loss")
+        lossPlot.set_xlabel("epoch #")
+        lossPlot.set_ylabel("loss")
         lossPlot.legend()
         # plt.show()
 
-    def predictGraph(self, testDir):
-        # To do: move this to data_prep file
-        score_generator = ImageDataGenerator().flow_from_directory(
-            directory=testDir,
-            target_size=(self.height, self.width),
-            color_mode="rgb",
-            batch_size=1,
-            class_mode="categorical",
-            shuffle=False
-        )
-
-        predicted_values = self.model.predict(score_generator, steps=score_generator.n // score_generator.batch_size,
-                                              verbose=1)
-
-        predicted_labels = []
-
-        for p in predicted_values:
-            predicted_labels.append(np.argmax(p))
-
-        from sklearn.metrics import classification_report, confusion_matrix
-        import itertools
-        # print(classification_report(score_generator.classes, predicted_labels, target_names=test_data.class_indices))
-
-        # To do: make it more readable
-        def plot_confusion_matrix(cm, classes,
-                                  title='Confusion matrix',
-                                  cmap=plt.cm.Blues):
-
-            plt.imshow(cm, interpolation='nearest', cmap=cmap)
-            plt.title(title)
-            plt.colorbar()
-            tick_marks = np.arange(len(classes))
-            plt.xticks(tick_marks, classes, rotation=45)
-            plt.yticks(tick_marks, classes)
-
-            fmt = 'd'
-            thresh = cm.max() / 2.
-            for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-                plt.text(j, i, format(cm[i, j], fmt),
-                         horizontalalignment="center",
-                         color="white" if cm[i, j] > thresh else "black")
-
-            plt.ylabel('True label')
-            plt.xlabel('Predicted label')
-            plt.tight_layout()
-
-        cm = confusion_matrix(score_generator.classes, predicted_labels)
-        plot_confusion_matrix(cm, self.test_data.class_indices)
-        plt.show()
+    # def predictGraph(self, testDir, predictPlot):
+    #     # To do: move this to data_prep file
+    #     score_generator = ImageDataGenerator().flow_from_directory(
+    #         directory=testDir,
+    #         target_size=(self.height, self.width),
+    #         color_mode="rgb",
+    #         batch_size=1,
+    #         class_mode="categorical",
+    #         shuffle=False
+    #     )
+    #
+    #     predicted_values = self.model.predict(score_generator, steps=score_generator.n // score_generator.batch_size,
+    #                                           verbose=1)
+    #
+    #     predicted_labels = []
+    #
+    #     for p in predicted_values:
+    #         predicted_labels.append(np.argmax(p))
+    #
+    #     from sklearn.metrics import classification_report, confusion_matrix
+    #     import itertools
+    #     # print(classification_report(score_generator.classes, predicted_labels, target_names=test_data.class_indices))
+    #
+    #     # To do: make it more readable
+    #     def plot_confusion_matrix(cm, classes,
+    #                               title='Confusion matrix',
+    #                               cmap=plt.cm.Blues):
+    #
+    #         predictPlot.title(title)
+    #         predictPlot.colorbar()
+    #         tick_marks = np.arange(len(classes))
+    #         predictPlot.xticks(tick_marks, classes, rotation=45)
+    #         predictPlot.yticks(tick_marks, classes)
+    #
+    #         fmt = 'd'
+    #         thresh = cm.max() / 2.
+    #         for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+    #             predictPlot.text(j, i, format(cm[i, j], fmt),
+    #                      horizontalalignment="center",
+    #                      color="white" if cm[i, j] > thresh else "black")
+    #
+    #         predictPlot.ylabel('True label')
+    #         predictPlot.xlabel('Predicted label')
+    #         predictPlot.tight_layout()
+    #
+    #     cm = confusion_matrix(score_generator.classes, predicted_labels)
+    #     plot_confusion_matrix(cm, self.test_data.class_indices)
+    #     plt.show()

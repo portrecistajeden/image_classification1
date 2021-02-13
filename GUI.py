@@ -15,6 +15,9 @@ class Gui(QMainWindow):
     def __init__(self, parent=None):
         super(Gui, self).__init__(parent)
 
+        self.trainDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\small"
+        self.testDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\test"
+
         #menu bar
         self.menuBar = self.menuBar()
         fileMenu = self.menuBar.addMenu('File')
@@ -106,8 +109,6 @@ class Gui(QMainWindow):
         self.consolePrint_right.setMinimumSize(100, 200)
         self.consolePrint_right.setAlignment(Qt.AlignTop)
 
-        self.trainDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\training"
-        self.testDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\test"
 
         self.prepare_gui()
         self.show()
@@ -189,7 +190,7 @@ class Gui(QMainWindow):
                 self.secondKNN.setChecked(False)
             elif self.sender() == self.firstCustomCNN:
                 self.kValue.setVisible(False)
-                self.epochs1.setVisible(False)
+                self.epochs1.setVisible(True)
 
                 self.firstKNN.setChecked(False)
                 self.firstSimpleCNN.setChecked(False)
@@ -210,7 +211,7 @@ class Gui(QMainWindow):
                 self.firstKNN.setChecked(False)
             else:
                 self.kValue2.setVisible(False)
-                self.epochs2.setVisible(False)
+                self.epochs2.setVisible(True)
 
                 self.secondKNN.setChecked(False)
                 self.secondSimpleCNN.setChecked(False)
@@ -236,9 +237,13 @@ class Gui(QMainWindow):
             self.topLeftGraphCanvas.draw()
             self.algorithm1.lossGraph(self.MLaxis)
             self.midLeftGraphCanvas.draw()
+            # self.algorithm1.predictGraph(self.testDir, self.BLaxis)
+            # self.botLeftGraphCanvas.draw()
 
         elif self.firstCustomCNN.isChecked():
-            self.algorithm1 = customCNN(self.trainDir, self.testDir)
+            self.algorithm1 = CustomCNN(self.trainDir, self.testDir, int(self.epochs1.text()), self.consolePrint_left)
+            self.algorithm1.accGraph(self.TLaxis)
+            self.topLeftGraphCanvas.draw()
             # self.algorithm1.
 
 
@@ -255,9 +260,10 @@ class Gui(QMainWindow):
             self.topLeftGraphCanvas.draw()
             self.algorithm2.lossGraph(self.MLaxis)
             self.midLeftGraphCanvas.draw()
+            self.algorithm2.predictGraph(self.testDir, self.BRaxis)
 
         elif self.secondCustomCNN.isChecked():
-            self.algorithm2 = customCNN(self.trainDir, self.testDir)
+            self.algorithm2 = CustomCNN(self.trainDir, self.testDir, int(self.epochs2.text()), self.consolePrint_right)
 
 
 class LoadDataWindow(QMainWindow):
