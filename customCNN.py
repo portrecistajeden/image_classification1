@@ -44,7 +44,7 @@ class CustomFit(keras.Model):
     @tf.function
     def test_step(self, data):
         x, y = data
-        pred = self.model(x, training=False)
+        pred = self.model(x, training=True)
         loss_value = self.loss(y, pred)
         self.acc_metric.update_state(y, pred)
 
@@ -59,6 +59,7 @@ class CustomCNN:
         # Useful variables
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
+        self.epochs = epochs
         self.width = 100
         self.height = 100
 
@@ -75,7 +76,7 @@ class CustomCNN:
             loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
             acc_metric=keras.metrics.SparseCategoricalAccuracy(name='accuracy'),
         )
-        training.fit(self.train_data, batch_size=32, epochs=epochs)
+        training.fit(self.train_data, batch_size=32, epochs=self.epochs)
         training.evaluate(self.test_data, batch_size=32)
 
 
@@ -84,7 +85,9 @@ class CustomCNN:
 
         self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
+        self.model.add(Conv2D(64, (3, 3), activation='relu',))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        #self.model.add(Dropout(0.2))
         #
         # self.model.add(Conv2D(64, (3, 3), activation='relu'))
         # self.model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -95,6 +98,7 @@ class CustomCNN:
         # self.model.add(Dropout(0.2))
 
         self.model.add(Flatten())
+        self.model.add(Dropout(0.5))
         #
         # self.model.add(Dense(128, activation='relu'))
         # self.model.add(Dropout(0.5))
@@ -102,7 +106,7 @@ class CustomCNN:
         self.model.add(Dense(self.classes, activation='softmax'))
 
         self.model.summary()
-        self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+        self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
     # def customTraining(self, epochs, optimizer, loss_fn, acc_metric, console):
     #
@@ -128,12 +132,12 @@ class CustomCNN:
     #     train_acc = acc_metric.result()
     #     print(f"Test accuracy {train_acc}")
     #     acc_metric.reset_states()
-
-    def accGraph(self, accPlot):
-        arr = np.arange(0, self.epochs)
-        accPlot.plot(arr, self.history.history["accuracy"], label="train_acc")
-        accPlot.plot(arr, self.history.history["val_accuracy"], label="val_acc")
-        #accPlot.title("Training accuracy")
-        #accPlot.xlabel("epoch #")
-        #accPlot.ylabel("accuracy")
-        accPlot.legend()
+    #
+    # def accGraph(self, accPlot):
+    #     arr = np.arange(0, self.epochs)
+    #     accPlot.plot(arr, self.history.history["accuracy"], label="train_acc")
+    #     accPlot.plot(arr, self.history.history["val_accuracy"], label="val_acc")
+    #     #accPlot.title("Training accuracy")
+    #     #accPlot.xlabel("epoch #")
+    #     #accPlot.ylabel("accuracy")
+    #     accPlot.legend()

@@ -242,8 +242,8 @@ class Gui(QMainWindow):
 
         elif self.firstCustomCNN.isChecked():
             self.algorithm1 = CustomCNN(self.trainDir, self.testDir, int(self.epochs1.text()), self.consolePrint_left)
-            self.algorithm1.accGraph(self.TLaxis)
-            self.topLeftGraphCanvas.draw()
+            # self.algorithm1.accGraph(self.TLaxis)
+            # self.topLeftGraphCanvas.draw()
             # self.algorithm1.
 
 
