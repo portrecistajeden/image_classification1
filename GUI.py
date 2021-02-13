@@ -21,7 +21,7 @@ class GraphsTabs(QTabWidget):
         self.addTab(self.tab2, "Graph 2")
         self.addTab(self.tab3, "Graph 3")
 
-        self.setMinimumSize(900, 700)
+        self.setMinimumSize(900, 500)
 
 class GraphTab(QWidget):
     def __init__(self):
@@ -34,6 +34,8 @@ class GraphTab(QWidget):
         layout = QHBoxLayout()
         layout.addWidget(self.graphCanvas)
         self.setLayout(layout)
+
+        #self.setMinimumHeight(400)
 
     def draw(self):
         self.graphCanvas.draw()
@@ -95,7 +97,6 @@ class Gui(QMainWindow):
 
         #right panel
         self.graphs = GraphsTabs()
-        self.graphs.setMinimumSize(900, 700)
 
         #bottom panel
         self.consolePrint = QTextBrowser()
@@ -111,7 +112,7 @@ class Gui(QMainWindow):
     def prepare_gui(self):
         self.setWindowTitle('inzynierka')
         self.setBaseSize(1200, 900)
-        self.setMinimumSize(900, 700)
+        #self.setMinimumSize(900, 700)
 
         left_panel = QVBoxLayout()
         left_panel.setAlignment(Qt.AlignTop)
@@ -128,31 +129,36 @@ class Gui(QMainWindow):
         left_part.addWidget(self.kValue)
         left_part.addWidget(self.epochs)
 
-        buttons = QGridLayout()
-        buttons.addWidget(self.loadModelButton, 0, 0)
-        buttons.addWidget(self.saveModelButton, 0, 1)
-        buttons.addWidget(self.trainButton, 1, 0)
-        buttons.addWidget(self.evaluateButton, 1, 1)
-        left_part.addLayout(buttons)
-
         left_panel.addLayout(left_part)
+
 
         right_panel = QGridLayout()
         label1 = QLabel('Graphs for your algoritm')
         right_panel.addWidget(label1, 0, 0)
         right_panel.addWidget(self.graphs, 1, 0)
 
-
         top_layout = QHBoxLayout()
         top_layout.addLayout(left_panel)
         top_layout.addLayout(right_panel)
+        topFrame = QFrame()
+        topFrame.setLayout(top_layout)
+        topFrame.setMinimumHeight(700)
 
-        bottom_layout = QGridLayout()
-        bottom_layout.addWidget(self.consolePrint, 0, 0)
+        bottom_layout = QHBoxLayout()
+        buttons = QVBoxLayout()
+        buttons.addWidget(self.loadModelButton)
+        buttons.addWidget(self.saveModelButton)
+        buttons.addWidget(self.trainButton)
+        buttons.addWidget(self.evaluateButton)
+        bottom_layout.addLayout(buttons)
+        bottom_layout.addWidget(self.consolePrint)
+        bottomFrame = QFrame()
+        bottomFrame.setLayout(bottom_layout)
+        bottomFrame.setFixedHeight(150)
 
         main_layout = QGridLayout()
-        main_layout.addLayout(top_layout, 0, 0)
-        main_layout.addLayout(bottom_layout, 1, 0)
+        main_layout.addWidget(topFrame, 0, 0)
+        main_layout.addWidget(bottomFrame, 1, 0)
 
         main_widget = QWidget()
         main_widget.setLayout(main_layout)
