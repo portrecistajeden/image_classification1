@@ -37,7 +37,7 @@ def load_data(dirPath):
 def load_dataCustom(dirPath):
     data = ImageDataGenerator().flow_from_directory(
         directory = dirPath, #
-        target_size = (100, 100),
+        target_size = (400, 400),
         color_mode = 'rgb',
         batch_size = 32,
         class_mode = 'sparse',

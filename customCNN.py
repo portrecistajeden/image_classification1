@@ -60,8 +60,8 @@ class CustomCNN:
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
         self.epochs = epochs
-        self.width = 100
-        self.height = 100
+        self.width = 400
+        self.height = 400
 
         # optimizer = keras.optimizers.Adam()
         # loss_fn = keras.losses.SparseCategoricalCrossentropy(from_logits=True)
