@@ -6,12 +6,20 @@ class KNN():
         self.testData = load_test_KNN(testDir)
         self.testClassLabels, self.testItemsLabels = getTestLabels(testDir)
         self.trainlabelsStr = getTrainingLabels(trainDir)
+
+    def createModel(self):
         self.knn = cv2.ml.KNearest_create()
 
-    def train(self):
+    def trainModel(self):
         self.knn.train(self.trainData, cv2.ml.ROW_SAMPLE, self.trainLabels)
 
-    def results(self, k, accPlot, console):
+    def loadModel(self, path):
+        pass
+
+    def saveModel(self, path):
+        pass
+
+    def evaluateModel(self, k, accPlot, console):
         if k == 0:
             accArray = []
             for k in range(1, 16):

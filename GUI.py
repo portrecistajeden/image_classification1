@@ -207,6 +207,7 @@ class Gui(QMainWindow):
         elif state == Qt.Unchecked:
             self.trainButton.setEnabled(False)
             self.loadModelButton.setEnabled(False)
+            self.createButton.setEnabled(False)
             self.kValue.setVisible(False)
             self.epochs.setVisible(False)
             self.simpleCNN.setEnabled(True)
@@ -227,23 +228,21 @@ class Gui(QMainWindow):
             self.customCNN.setEnabled(False)
 
             self.chosenAlgorithm = CNN(self.trainDir, self.testDir)
-            self.chosenAlgorithm.createModel()
-            self.trainButton.setEnabled(True)
 
         elif self.knn.isChecked():
             self.simpleCNN.setEnabled(False)
             self.customCNN.setEnabled(False)
 
             self.chosenAlgorithm = KNN(self.trainDir, self.testDir)
-            self.trainButton.setEnabled(True)
 
         elif self.customCNN.isChecked():
             self.simpleCNN.setEnabled(False)
             self.knn.setEnabled(False)
 
             self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, self.consolePrint)
-            self.chosenAlgorithm.createModel()
-            self.trainButton.setEnabled(True)
+
+        self.chosenAlgorithm.createModel()
+        self.trainButton.setEnabled(True)
 
 
 
@@ -260,9 +259,7 @@ class Gui(QMainWindow):
             self.evaluateButton.setEnabled(True)
 
         elif self.knn.isChecked():
-            self.chosenAlgorithm.results(int(self.kValue.text()), self.graphs.tab1.axis, self.consolePrint)
-
-            self.topLeftGraphCanvas.draw()
+            self.chosenAlgorithm.trainModel()
 
             self.saveModelButton.setEnabled(True)
             self.evaluateButton.setEnabled(True)
@@ -297,13 +294,21 @@ class Gui(QMainWindow):
         if self.algorithmFlag == 1:
             self.chosenAlgorithm = CNN(self.trainDir, self.testDir)
             self.chosenAlgorithm.loadModel(loadPath)
+        elif self.algorithmFlag == 2:
+            pass
+        elif self.algorithmFlag == 3:
+            self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, self.consolePrint)
+            self.chosenAlgorithm.loadModel(loadPath)
 
         self.saveModelButton.setEnabled(True)
         self.trainButton.setEnabled(True)
         self.evaluateButton.setEnabled(True)
 
     def evaluateClick(self):
-        self.chosenAlgorithm.evaluateModel()
+        if self.algorithmFlag == 2:
+            self.chosenAlgorithm.evaluateModel(int(self.kValue.text()), self.graphs.tab1.axis, self.consolePrint)
+        else:
+            self.chosenAlgorithm.evaluateModel()
 
 class LoadDataWindow(QMainWindow):
     def __init__(self, parent):
