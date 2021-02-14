@@ -51,7 +51,7 @@ class CustomFit(keras.Model):
         return {"loss": loss_value, "accuracy": self.acc_metric.result()}
 
 class CustomCNN:
-    def __init__(self, trainDir, testDir, epochs, console):
+    def __init__(self, trainDir, testDir, console):
         # Load data form data_prep file
         self.train_data = load_dataCustom(trainDir)
         self.test_data = load_dataCustom(testDir)
@@ -59,11 +59,11 @@ class CustomCNN:
         # Useful variables
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
-        self.epochs = epochs
         self.width = 400
         self.height = 400
 
-    def trainModel(self):
+    def trainModel(self, epochs):
+        self.epochs = epochs
         self.training = CustomFit(self.model)
         self.training.compile(
             optimizer=keras.optimizers.Adam(),
@@ -109,27 +109,4 @@ class CustomCNN:
         self.model.summary()
         self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    # def customTraining(self, epochs, optimizer, loss_fn, acc_metric, console):
-    #
-    #     for epoch in range(epochs):
-    #         console.append(f"\n Epoch {epoch}")
-    #         for batch_idx, (x, y) in enumerate(self.train_data):
-    #             with tf.GradientTape() as tape:
-    #                 pred = self.model(x, training=True)
-    #                 loss = loss_fn(y, pred)
-    #
-    #             gradients = tape.gradient(loss, self.model.trainable_weights)
-    #             optimizer.apply_gradients(zip(gradients, self.model.trainable_weights))
-    #             acc_metric.update_state(y, pred)
-    #
-    #         train_acc = acc_metric.result()
-    #         console.append(f"Accuracy {train_acc}")
-    #         acc_metric.reset_states()
-    #
-    # def customTest(self, acc_metric):
-    #     for batch_idx, (x, y) in enumerate(self.test_data):
-    #         pred = self.model(x, training=True)
-    #         acc_metric.update_state(y, pred)
-    #     train_acc = acc_metric.result()
-    #     print(f"Test accuracy {train_acc}")
-    #     acc_metric.reset_states()
+

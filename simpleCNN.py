@@ -5,6 +5,7 @@ from keras.preprocessing.image import ImageDataGenerator
 # Used to create model
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
+import tensorflow as tf
 
 # Used to show graphs
 import numpy as np
@@ -15,7 +16,7 @@ from data_prep import load_data, getNumberOfClasses
 
 
 class CNN():
-    def __init__(self, trainDir, testDir, epochs):
+    def __init__(self, trainDir, testDir):
 
         # Load data form data_prep file
         self.train_data = load_data(trainDir)
@@ -24,22 +25,18 @@ class CNN():
         # Useful variables
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
-        self.epochs = epochs
         self.width = 100
         self.height = 100
 
         self.step_size_train = self.train_data.n // self.train_data.batch_size
         self.step_size_test = self.test_data.n // self.test_data.batch_size
 
-        self.createModel()
-        self.fitModel()
         # self.accGraph(accPlot)
         # self.lossGraph()
         # self.predictGraph(testDir)
 
     def createModel(self):
         self.model = Sequential()
-
         self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
         self.model.add(Flatten())
         self.model.add(Dense(self.classes, activation='softmax'))
@@ -47,8 +44,20 @@ class CNN():
         self.model.summary()
         self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
-    def fitModel(self):
+
+    def trainModel(self, epochs):
+        self.epochs = epochs
+
         self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.test_data)
+
+    def evaluateModel(self):
+        self.model.evaluate(self.test_data, batch_size=32)
+
+    def saveModel(self, path):
+        self.model.save(path)
+
+    def loadModel(self, path):
+        self.model = tf.keras.models.load_model(path)
 
     def accGraph(self, accPlot):
         arr = np.arange(0, self.epochs)

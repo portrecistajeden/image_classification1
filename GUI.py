@@ -48,6 +48,8 @@ class Gui(QMainWindow):
         self.trainDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\small"
         self.testDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\test"
 
+        self.algorithmFlag = 0
+
         #menu bar
         self.menuBar = self.menuBar()
         fileMenu = self.menuBar.addMenu('File')
@@ -69,18 +71,26 @@ class Gui(QMainWindow):
         self.customCNN = QCheckBox('Custom CNN')
         self.customCNN.stateChanged.connect(self.uncheckFirst)
 
-        self.trainButton = QPushButton('Execute')
+        self.createButton = QPushButton('Create model')
+        self.createButton.clicked.connect(self.createClick)
+        self.createButton.setFixedWidth(150)
+        self.createButton.setEnabled(False)
+        self.trainButton = QPushButton('Train model')
         self.trainButton.clicked.connect(self.trainClick)
         self.trainButton.setFixedWidth(150)
+        self.trainButton.setEnabled(False)
         self.saveModelButton = QPushButton('Save model')
         self.saveModelButton.clicked.connect(self.saveModelClick)
         self.saveModelButton.setFixedWidth(150)
+        self.saveModelButton.setEnabled(False)
         self.loadModelButton = QPushButton('Load model')
         self.loadModelButton.clicked.connect(self.loadModelClick)
         self.loadModelButton.setFixedWidth(150)
+        self.loadModelButton.setEnabled(False)
         self.evaluateButton = QPushButton('Evaluate')
         self.evaluateButton.clicked.connect(self.evaluateClick)
         self.evaluateButton.setFixedWidth(150)
+        self.evaluateButton.setEnabled(False)
 
         self.kValue = QLineEdit()
         self.kValue.setFixedWidth(150)
@@ -146,10 +156,11 @@ class Gui(QMainWindow):
 
         bottom_layout = QHBoxLayout()
         buttons = QVBoxLayout()
-        buttons.addWidget(self.loadModelButton)
-        buttons.addWidget(self.saveModelButton)
+        buttons.addWidget(self.createButton)
         buttons.addWidget(self.trainButton)
         buttons.addWidget(self.evaluateButton)
+        buttons.addWidget(self.loadModelButton)
+        buttons.addWidget(self.saveModelButton)
         bottom_layout.addLayout(buttons)
         bottom_layout.addWidget(self.consolePrint)
         bottomFrame = QFrame()
@@ -167,23 +178,41 @@ class Gui(QMainWindow):
     def uncheckFirst(self, state):
         if state == Qt.Checked:
             if self.sender() == self.simpleCNN:
+                self.algorithmFlag = 1
                 self.kValue.setVisible(False)
                 self.epochs.setVisible(True)
-
                 self.knn.setChecked(False)
                 self.customCNN.setChecked(False)
+                self.loadModelButton.setEnabled(True)
+                self.createButton.setEnabled(True)
+
             elif self.sender() == self.knn:
+                self.algorithmFlag = 2
                 self.kValue.setVisible(True)
                 self.epochs.setVisible(False)
-
                 self.simpleCNN.setChecked(False)
                 self.customCNN.setChecked(False)
-            elif self.sender() == self.customCNN:
+                self.loadModelButton.setEnabled(True)
+                self.createButton.setEnabled(True)
+
+            else:
+                self.algorithmFlag = 3
                 self.kValue.setVisible(False)
                 self.epochs.setVisible(True)
-
                 self.knn.setChecked(False)
                 self.simpleCNN.setChecked(False)
+                self.loadModelButton.setEnabled(True)
+                self.createButton.setEnabled(True)
+
+        elif state == Qt.Unchecked:
+            self.trainButton.setEnabled(False)
+            self.loadModelButton.setEnabled(False)
+            self.kValue.setVisible(False)
+            self.epochs.setVisible(False)
+            self.simpleCNN.setEnabled(True)
+            self.knn.setEnabled(True)
+            self.customCNN.setEnabled(True)
+
 
     def open_data_window(self):
         dialog = LoadDataWindow(self)
@@ -192,37 +221,89 @@ class Gui(QMainWindow):
     def save_data(self):
         print('save')
 
-    def trainClick(self):
-        if self.knn.isChecked():
-            self.chosenAlgorithm = KNN(self.trainDir, self.testDir)
-            self.chosenAlgorithm.train()
-            self.chosenAlgorithm.results(int(self.kValue.text()), self.graphs.tab1.axis, self.consolePrint)
-            self.topLeftGraphCanvas.draw()
+    def createClick(self):
+        if self.simpleCNN.isChecked():
+            self.knn.setEnabled(False)
+            self.customCNN.setEnabled(False)
 
-        elif self.simpleCNN.isChecked():
-            self.chosenAlgorithm = CNN(self.trainDir, self.testDir, int(self.epochs.text()))
+            self.chosenAlgorithm = CNN(self.trainDir, self.testDir)
+            self.chosenAlgorithm.createModel()
+            self.trainButton.setEnabled(True)
+
+        elif self.knn.isChecked():
+            self.simpleCNN.setEnabled(False)
+            self.customCNN.setEnabled(False)
+
+            self.chosenAlgorithm = KNN(self.trainDir, self.testDir)
+            self.trainButton.setEnabled(True)
+
+        elif self.customCNN.isChecked():
+            self.simpleCNN.setEnabled(False)
+            self.knn.setEnabled(False)
+
+            self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, self.consolePrint)
+            self.chosenAlgorithm.createModel()
+            self.trainButton.setEnabled(True)
+
+
+
+    def trainClick(self):
+        if self.simpleCNN.isChecked():
+            self.chosenAlgorithm.trainModel(int(self.epochs.text()))
+
             self.chosenAlgorithm.accGraph(self.graphs.tab1.axis)
             self.graphs.tab1.draw()
             self.chosenAlgorithm.lossGraph(self.graphs.tab2.axis)
             self.graphs.tab2.draw()
 
+            self.saveModelButton.setEnabled(True)
+            self.evaluateButton.setEnabled(True)
+
+        elif self.knn.isChecked():
+            self.chosenAlgorithm.results(int(self.kValue.text()), self.graphs.tab1.axis, self.consolePrint)
+
+            self.topLeftGraphCanvas.draw()
+
+            self.saveModelButton.setEnabled(True)
+            self.evaluateButton.setEnabled(True)
 
         elif self.customCNN.isChecked():
-            self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, int(self.epochs.text()), self.consolePrint)
-            self.chosenAlgorithm.createModel()
-            self.chosenAlgorithm.trainModel()
+            self.chosenAlgorithm.trainModel(int(self.epochs.text()))
             self.chosenAlgorithm.evaluateModel()
+
             self.chosenAlgorithm.accGraph(self.TLaxis)
             self.topLeftGraphCanvas.draw()
 
+            self.saveModelButton.setEnabled(True)
+            self.evaluateButton.setEnabled(True)
+
     def saveModelClick(self):
-        pass
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.Directory)
+        file = dlg.getExistingDirectory(self, 'Select directory to save the model')
+        if file != "":
+            savePath = file
+
+        self.chosenAlgorithm.saveModel(savePath)
+
 
     def loadModelClick(self):
-        pass
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.Directory)
+        file = dlg.getExistingDirectory(self, 'Select directory to save the model')
+        if file != "":
+            loadPath = file
+
+        if self.algorithmFlag == 1:
+            self.chosenAlgorithm = CNN(self.trainDir, self.testDir)
+            self.chosenAlgorithm.loadModel(loadPath)
+
+        self.saveModelButton.setEnabled(True)
+        self.trainButton.setEnabled(True)
+        self.evaluateButton.setEnabled(True)
 
     def evaluateClick(self):
-        pass
+        self.chosenAlgorithm.evaluateModel()
 
 class LoadDataWindow(QMainWindow):
     def __init__(self, parent):
@@ -265,14 +346,16 @@ class LoadDataWindow(QMainWindow):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.Directory)
         file = dlg.getExistingDirectory(self, 'Select training data directory')
-        if file[0]:
+        if file != "":
             self.training_Data_lineedit.setText(file)
             self.parent().trainDir = file
+
+
 
     def test_data_button_click(self):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.Directory)
         file = dlg.getExistingDirectory(self, 'Select test data directory')
-        if file[0]:
+        if file != "":
             self.test_data_lineedit.setText(file)
             self.parent().testDir = file
