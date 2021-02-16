@@ -49,7 +49,8 @@ def load_dataCustom(dirPath):
 
 def load_data_KNN(dirPath):
     data = []
-    labels = []
+    labelsNum = []
+    dictionary = {}
     i = 0
 
     for entry in os.scandir(dirPath):
@@ -72,15 +73,17 @@ def load_data_KNN(dirPath):
             if img.shape != (480000,):
                 print(imgPath)
                 print(f"img shape: {img.shape}")
-            labels.append(entry.name)
+            labelsNum.append(i)
+
+        dictionary[entry.name] = i
         i = i + 1
     data = np.array(data, dtype=np.float32)
-    labels = np.array(labels, dtype=np.str)
-    return data, labels
+    labelsNum = np.array(labelsNum, dtype=np.float32)
+    return data, labelsNum, dictionary
 
 def load_test_KNN(dirPath):
     data = []
-    labels = []
+    labelsStr = []
     for entry in os.scandir(dirPath):
         path = dirPath + '/' + entry.name
         for entry2 in os.scandir(path):
@@ -98,10 +101,12 @@ def load_test_KNN(dirPath):
                 print(imgPath)
                 print(f"img shape: {img.shape}")
             data.append(img)
-            labels.append(entry.name)
+            labelsStr.append(entry.name)
+
     data = np.array(data, dtype=np.float32)
-    labels = np.array(labels, dtype=np.str)
-    return data, labels
+    labelsStr = np.array(labelsStr, dtype=np.str)
+
+    return data, labelsStr
 
 def getNumberOfClasses(dirPath):
     i = 0

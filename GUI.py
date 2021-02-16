@@ -192,8 +192,10 @@ class Gui(QMainWindow):
                 self.epochs.setVisible(False)
                 self.simpleCNN.setChecked(False)
                 self.customCNN.setChecked(False)
-                self.loadModelButton.setEnabled(True)
+                self.loadModelButton.setEnabled(False)
                 self.createButton.setEnabled(True)
+                self.graphs.setTabEnabled(1, False)
+                self.graphs.setTabEnabled(2, False)
 
             else:
                 self.algorithmFlag = 3
@@ -261,7 +263,8 @@ class Gui(QMainWindow):
         elif self.knn.isChecked():
             self.chosenAlgorithm.trainModel()
 
-            self.saveModelButton.setEnabled(True)
+            self.saveModelButton.setEnabled(False)
+            self.loadModelButton.setEnabled(False)
             self.evaluateButton.setEnabled(True)
 
         elif self.customCNN.isChecked():
@@ -293,8 +296,6 @@ class Gui(QMainWindow):
         if self.algorithmFlag == 1:
             self.chosenAlgorithm = CNN(self.trainDir, self.testDir)
             self.chosenAlgorithm.loadModel(loadPath)
-        elif self.algorithmFlag == 2:
-            pass
         elif self.algorithmFlag == 3:
             self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, self.consolePrint)
             self.chosenAlgorithm.loadModel(loadPath)
