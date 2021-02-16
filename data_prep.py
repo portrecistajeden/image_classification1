@@ -24,7 +24,7 @@ def load_images(directory):
 def load_data(dirPath):
     data = ImageDataGenerator().flow_from_directory(
         directory = dirPath, #
-        target_size = (100, 100),
+        target_size = (400, 400),
         color_mode = 'rgb',
         batch_size = 32,
         class_mode = 'categorical',
@@ -69,14 +69,18 @@ def load_data_KNN(dirPath):
             img = img.flatten()
             #print(img)
             data.append(img)
-            labels.append(i)
+            if img.shape != (480000,):
+                print(imgPath)
+                print(f"img shape: {img.shape}")
+            labels.append(entry.name)
         i = i + 1
     data = np.array(data, dtype=np.float32)
-    labels = np.array(labels, dtype=np.float32)
+    labels = np.array(labels, dtype=np.str)
     return data, labels
 
 def load_test_KNN(dirPath):
     data = []
+    labels = []
     for entry in os.scandir(dirPath):
         path = dirPath + '/' + entry.name
         for entry2 in os.scandir(path):
@@ -90,9 +94,14 @@ def load_test_KNN(dirPath):
             img = imageTo1DVector(img)
             #img = np.vstack(img).astype(np.float32)
             img = img.flatten()
+            if img.shape != (480000,):
+                print(imgPath)
+                print(f"img shape: {img.shape}")
             data.append(img)
+            labels.append(entry.name)
     data = np.array(data, dtype=np.float32)
-    return data
+    labels = np.array(labels, dtype=np.str)
+    return data, labels
 
 def getNumberOfClasses(dirPath):
     i = 0

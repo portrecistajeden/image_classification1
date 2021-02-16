@@ -269,7 +269,6 @@ class Gui(QMainWindow):
             self.chosenAlgorithm.evaluateModel()
 
             self.chosenAlgorithm.accGraph(self.TLaxis)
-            self.topLeftGraphCanvas.draw()
 
             self.saveModelButton.setEnabled(True)
             self.evaluateButton.setEnabled(True)
@@ -307,6 +306,7 @@ class Gui(QMainWindow):
     def evaluateClick(self):
         if self.algorithmFlag == 2:
             self.chosenAlgorithm.evaluateModel(int(self.kValue.text()), self.graphs.tab1.axis, self.consolePrint)
+            self.graphs.tab1.draw()
         else:
             self.chosenAlgorithm.evaluateModel()
 
