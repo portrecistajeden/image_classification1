@@ -24,7 +24,8 @@ class CNN():
 
         # Useful variables
         # To do: let user change this
-        self.classes = getNumberOfClasses(trainDir)
+        # self.classes = getNumberOfClasses(trainDir)
+        self.classes = 6
         self.width = 100
         self.height = 100
 
@@ -38,8 +39,20 @@ class CNN():
     def createModel(self):
         self.model = Sequential()
         self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Dropout(0.2))
+
+        self.model.add(Conv2D(64, (3, 3), activation='relu'))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Dropout(0.2))
+
         self.model.add(Flatten())
+
+        self.model.add(Dense(128, activation='relu'))
+        self.model.add(Dropout(0.5))
+        
         self.model.add(Dense(self.classes, activation='softmax'))
+        
 
         self.model.summary()
         self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])

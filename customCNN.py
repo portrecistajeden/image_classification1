@@ -59,18 +59,19 @@ class CustomCNN:
         # Useful variables
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
-        self.width = 400
-        self.height = 400
+        self.width = 100
+        self.height = 100
 
     def trainModel(self, epochs):
         self.epochs = epochs
         self.training = CustomFit(self.model)
         self.training.compile(
             optimizer=keras.optimizers.Adam(),
-            loss=keras.losses.SparseCategoricalCrossentropy(from_logits=True),
-            acc_metric=keras.metrics.SparseCategoricalAccuracy(name='accuracy'),
+            loss=keras.losses.CategoricalCrossentropy(from_logits=True),
+            acc_metric=keras.metrics.CategoricalAccuracy(name='accuracy'),
         )
         self.history = self.training.fit(self.train_data, batch_size=32, epochs=self.epochs)
+        # print(self.history)
 
     def evaluateModel(self):
         self.training.evaluate(self.test_data, batch_size=32)
@@ -86,9 +87,11 @@ class CustomCNN:
 
         self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Dropout(0.2))
+
         self.model.add(Conv2D(64, (3, 3), activation='relu',))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        #self.model.add(Dropout(0.2))
+        self.model.add(Dropout(0.2))
         #
         # self.model.add(Conv2D(64, (3, 3), activation='relu'))
         # self.model.add(MaxPooling2D(pool_size=(2, 2)))
@@ -99,14 +102,33 @@ class CustomCNN:
         # self.model.add(Dropout(0.2))
 
         self.model.add(Flatten())
-        self.model.add(Dropout(0.5))
-        #
-        # self.model.add(Dense(128, activation='relu'))
         # self.model.add(Dropout(0.5))
+        #
+        self.model.add(Dense(128, activation='relu'))
+        self.model.add(Dropout(0.5))
 
         self.model.add(Dense(self.classes, activation='softmax'))
 
         self.model.summary()
         self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+
+
+    def accGraph(self, accPlot):
+        arr = np.arange(0, self.epochs)
+        accPlot.plot(arr, self.history.history["accuracy"], label="train_acc")
+        # accPlot.plot(arr, self.history.history["val_accuracy"], label="val_acc")
+        accPlot.set_title("Training accuracy")
+        accPlot.set_xlabel("epoch #")
+        accPlot.set_ylabel("accuracy")
+        accPlot.legend()
+
+    def lossGraph(self, lossPlot):
+        arr = np.arange(0, self.epochs)
+        lossPlot.plot(arr, self.history.history["loss"], label="train_loss")
+        # lossPlot.plot(arr, self.history.history["val_loss"], label="val_loss")
+        lossPlot.set_title("Training loss")
+        lossPlot.set_xlabel("epoch #")
+        lossPlot.set_ylabel("loss")
+        lossPlot.legend()
 
 

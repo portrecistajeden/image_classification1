@@ -268,8 +268,10 @@ class Gui(QMainWindow):
             self.chosenAlgorithm.trainModel(int(self.epochs.text()))
             self.chosenAlgorithm.evaluateModel()
 
-            self.chosenAlgorithm.accGraph(self.TLaxis)
-            self.topLeftGraphCanvas.draw()
+            self.chosenAlgorithm.accGraph(self.graphs.tab1.axis)
+            self.graphs.tab1.draw()
+            self.chosenAlgorithm.lossGraph(self.graphs.tab2.axis)
+            self.graphs.tab2.draw()
 
             self.saveModelButton.setEnabled(True)
             self.evaluateButton.setEnabled(True)
