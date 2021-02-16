@@ -45,7 +45,7 @@ class Gui(QMainWindow):
     def __init__(self, parent=None):
         super(Gui, self).__init__(parent)
 
-        self.trainDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\small"
+        self.trainDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\training"
         self.testDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\test"
 
         self.algorithmFlag = 0
@@ -57,9 +57,9 @@ class Gui(QMainWindow):
         loadAction = QAction('Load', self)
         loadAction.triggered.connect(self.open_data_window)
         fileMenu.addAction(loadAction)
-        saveAction = QAction('Save', self)
-        saveAction.triggered.connect(self.save_data)
-        fileMenu.addAction(saveAction)
+        resetAction = QAction('Reset', self)
+        resetAction.triggered.connect(self.reset)
+        fileMenu.addAction(resetAction)
 
         #left panel
         self.algorithmLabel = QLabel('Select first algorithm to compare')
@@ -92,18 +92,11 @@ class Gui(QMainWindow):
         self.evaluateButton.setFixedWidth(150)
         self.evaluateButton.setEnabled(False)
 
-        self.kValue = QLineEdit()
-        self.kValue.setFixedWidth(150)
-        self.kValue.setPlaceholderText('k Value')
-        self.kValue.setValidator(QIntValidator())
-        self.kValue.setVisible(False)
-        self.kValue.setText('0')
-
-        self.epochs = QLineEdit()
-        self.epochs.setFixedWidth(150)
-        self.epochs.setPlaceholderText('epochs')
-        self.epochs.setValidator(QIntValidator())
-        self.epochs.setVisible(False)
+        self.parameterLabel = QLabel('Parameter k/epochs:')
+        self.parameter = QLineEdit()
+        self.parameter.setFixedWidth(150)
+        self.parameter.setPlaceholderText('parameter')
+        self.parameter.setValidator(QIntValidator())
 
         #right panel
         self.graphs = GraphsTabs()
@@ -136,8 +129,8 @@ class Gui(QMainWindow):
         checkboxes.addWidget(self.customCNN)
         left_part.addLayout(checkboxes)
 
-        left_part.addWidget(self.kValue)
-        left_part.addWidget(self.epochs)
+        left_part.addWidget(self.parameterLabel)
+        left_part.addWidget(self.parameter)
 
         left_panel.addLayout(left_part)
 
@@ -146,6 +139,9 @@ class Gui(QMainWindow):
         label1 = QLabel('Graphs for your algoritm')
         right_panel.addWidget(label1, 0, 0)
         right_panel.addWidget(self.graphs, 1, 0)
+
+        self.graphs.setTabEnabled(1, False)
+        self.graphs.setTabEnabled(2, False)
 
         top_layout = QHBoxLayout()
         top_layout.addLayout(left_panel)
@@ -179,39 +175,47 @@ class Gui(QMainWindow):
         if state == Qt.Checked:
             if self.sender() == self.simpleCNN:
                 self.algorithmFlag = 1
-                self.kValue.setVisible(False)
-                self.epochs.setVisible(True)
+
                 self.knn.setChecked(False)
                 self.customCNN.setChecked(False)
+
                 self.loadModelButton.setEnabled(True)
                 self.createButton.setEnabled(True)
 
+                self.graphs.setTabEnabled(0, True)
+                self.graphs.setTabEnabled(1, True)
+                self.graphs.setTabEnabled(2, True)
+
             elif self.sender() == self.knn:
                 self.algorithmFlag = 2
-                self.kValue.setVisible(True)
-                self.epochs.setVisible(False)
+
                 self.simpleCNN.setChecked(False)
                 self.customCNN.setChecked(False)
+
                 self.loadModelButton.setEnabled(False)
                 self.createButton.setEnabled(True)
+
+                self.graphs.setTabEnabled(0, True)
                 self.graphs.setTabEnabled(1, False)
                 self.graphs.setTabEnabled(2, False)
 
             else:
                 self.algorithmFlag = 3
-                self.kValue.setVisible(False)
-                self.epochs.setVisible(True)
+
                 self.knn.setChecked(False)
                 self.simpleCNN.setChecked(False)
+
                 self.loadModelButton.setEnabled(True)
                 self.createButton.setEnabled(True)
+
+                self.graphs.setTabEnabled(0, True)
+                self.graphs.setTabEnabled(1, True)
+                self.graphs.setTabEnabled(2, True)
 
         elif state == Qt.Unchecked:
             self.trainButton.setEnabled(False)
             self.loadModelButton.setEnabled(False)
             self.createButton.setEnabled(False)
-            self.kValue.setVisible(False)
-            self.epochs.setVisible(False)
             self.simpleCNN.setEnabled(True)
             self.knn.setEnabled(True)
             self.customCNN.setEnabled(True)
@@ -221,8 +225,30 @@ class Gui(QMainWindow):
         dialog = LoadDataWindow(self)
         dialog.show()
 
-    def save_data(self):
-        print('save')
+    def reset(self):
+        self.chosenAlgorithm = None
+
+        self.simpleCNN.setEnabled(True)
+        self.knn.setEnabled(True)
+        self.customCNN.setEnabled(True)
+
+        self.simpleCNN.setChecked(False)
+        self.knn.setChecked(False)
+        self.customCNN.setChecked(False)
+
+        self.loadModelButton.setEnabled(True)
+        self.evaluateButton.setEnabled(True)
+
+        self.graphs.tab1.axis.clear()
+        self.graphs.tab1.draw()
+        self.graphs.tab2.axis.clear()
+        self.graphs.tab2.draw()
+        self.graphs.tab3.axis.clear()
+        self.graphs.tab3.draw()
+
+        self.graphs.setTabEnabled(0, False)
+        self.graphs.setTabEnabled(1, False)
+        self.graphs.setTabEnabled(2, False)
 
     def createClick(self):
         if self.simpleCNN.isChecked():
@@ -250,7 +276,7 @@ class Gui(QMainWindow):
 
     def trainClick(self):
         if self.simpleCNN.isChecked():
-            self.chosenAlgorithm.trainModel(int(self.epochs.text()))
+            self.chosenAlgorithm.trainModel(int(self.parameter.text()))
 
             self.chosenAlgorithm.accGraph(self.graphs.tab1.axis)
             self.graphs.tab1.draw()
@@ -268,13 +294,20 @@ class Gui(QMainWindow):
             self.evaluateButton.setEnabled(True)
 
         elif self.customCNN.isChecked():
-            self.chosenAlgorithm.trainModel(int(self.epochs.text()))
+            self.chosenAlgorithm.trainModel(int(self.parameter.text()))
             self.chosenAlgorithm.evaluateModel()
 
-            self.chosenAlgorithm.accGraph(self.TLaxis)
+            self.chosenAlgorithm.accGraph(self.graphs.tab1.axis)
 
             self.saveModelButton.setEnabled(True)
             self.evaluateButton.setEnabled(True)
+
+    def evaluateClick(self):
+        if self.algorithmFlag == 2:
+            self.chosenAlgorithm.evaluateModel(int(self.parameter.text()), self.graphs.tab1.axis, self.consolePrint)
+            self.graphs.tab1.draw()
+        else:
+            self.chosenAlgorithm.evaluateModel()
 
     def saveModelClick(self):
         dlg = QFileDialog()
@@ -284,7 +317,6 @@ class Gui(QMainWindow):
             savePath = file
 
         self.chosenAlgorithm.saveModel(savePath)
-
 
     def loadModelClick(self):
         dlg = QFileDialog()
@@ -304,12 +336,6 @@ class Gui(QMainWindow):
         self.trainButton.setEnabled(True)
         self.evaluateButton.setEnabled(True)
 
-    def evaluateClick(self):
-        if self.algorithmFlag == 2:
-            self.chosenAlgorithm.evaluateModel(int(self.kValue.text()), self.graphs.tab1.axis, self.consolePrint)
-            self.graphs.tab1.draw()
-        else:
-            self.chosenAlgorithm.evaluateModel()
 
 class LoadDataWindow(QMainWindow):
     def __init__(self, parent):

@@ -24,10 +24,9 @@ class CNN():
 
         # Useful variables
         # To do: let user change this
-        # self.classes = getNumberOfClasses(trainDir)
-        self.classes = 6
-        self.width = 100
-        self.height = 100
+        self.classes = getNumberOfClasses(trainDir)
+        self.width = 400
+        self.height = 400
 
         self.step_size_train = self.train_data.n // self.train_data.batch_size
         self.step_size_test = self.test_data.n // self.test_data.batch_size
@@ -39,28 +38,14 @@ class CNN():
     def createModel(self):
         self.model = Sequential()
         self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
-
-        self.model.add(Conv2D(64, (3, 3), activation='relu'))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
-
         self.model.add(Flatten())
-
-        self.model.add(Dense(128, activation='relu'))
-        self.model.add(Dropout(0.5))
-        
         self.model.add(Dense(self.classes, activation='softmax'))
-        
 
         self.model.summary()
         self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
-
     def trainModel(self, epochs):
         self.epochs = epochs
-
         self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.test_data)
 
     def evaluateModel(self):

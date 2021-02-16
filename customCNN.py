@@ -59,8 +59,8 @@ class CustomCNN:
         # Useful variables
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
-        self.width = 100
-        self.height = 100
+        self.width = 400
+        self.height = 400
 
     def trainModel(self, epochs):
         self.epochs = epochs
