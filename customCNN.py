@@ -109,8 +109,7 @@ class CustomCNN:
 
         self.model.add(Dense(self.classes, activation='softmax'))
 
-        sum = self.model.summary()
-        print(sum)
+
         self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
 
 

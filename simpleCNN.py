@@ -48,7 +48,7 @@ class CNN():
     def trainModel(self, epochs):
         self.epochs = epochs
         self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.test_data)
-        print(self.history.history)
+
     def evaluateModel(self):
         self.model.evaluate(self.test_data, batch_size=32)
 
