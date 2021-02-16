@@ -16,11 +16,12 @@ from data_prep import load_data, getNumberOfClasses
 
 
 class CNN():
-    def __init__(self, trainDir, testDir):
+    def __init__(self, trainDir, testDir, console):
 
         # Load data form data_prep file
         self.train_data = load_data(trainDir)
         self.test_data = load_data(testDir)
+        self.console = console
 
         # Useful variables
         # To do: let user change this
@@ -41,13 +42,13 @@ class CNN():
         self.model.add(Flatten())
         self.model.add(Dense(self.classes, activation='softmax'))
 
-        self.model.summary()
+        self.model.summary(print_fn=lambda x: self.console.append(x))
         self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
     def trainModel(self, epochs):
         self.epochs = epochs
         self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.test_data)
-
+        print(self.history.history)
     def evaluateModel(self):
         self.model.evaluate(self.test_data, batch_size=32)
 
@@ -58,21 +59,23 @@ class CNN():
         self.model = tf.keras.models.load_model(path)
 
     def accGraph(self, accPlot):
-        arr = np.arange(0, self.epochs)
+        arr = np.arange(1, self.epochs+1)
         accPlot.plot(arr, self.history.history["accuracy"], label="train_acc")
         accPlot.plot(arr, self.history.history["val_accuracy"], label="val_acc")
         accPlot.set_title("Training accuracy")
         accPlot.set_xlabel("epoch #")
         accPlot.set_ylabel("accuracy")
+        accPlot.set_xlim([1, self.epochs])
         accPlot.legend()
 
     def lossGraph(self, lossPlot):
-        arr = np.arange(0, self.epochs)
+        arr = np.arange(1, self.epochs+1)
         lossPlot.plot(arr, self.history.history["loss"], label="train_loss")
         lossPlot.plot(arr, self.history.history["val_loss"], label="val_loss")
         lossPlot.set_title("Training loss")
         lossPlot.set_xlabel("epoch #")
         lossPlot.set_ylabel("loss")
+        lossPlot.set_xlim([1, self.epochs])
         lossPlot.legend()
 
     # def predictGraph(self, testDir, predictPlot):

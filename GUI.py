@@ -255,7 +255,7 @@ class Gui(QMainWindow):
             self.knn.setEnabled(False)
             self.customCNN.setEnabled(False)
 
-            self.chosenAlgorithm = CNN(self.trainDir, self.testDir)
+            self.chosenAlgorithm = CNN(self.trainDir, self.testDir, self.consolePrint)
 
         elif self.knn.isChecked():
             self.simpleCNN.setEnabled(False)
