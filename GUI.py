@@ -13,9 +13,9 @@ from customCNN import *
 class GraphsTabs(QTabWidget):
     def __init__(self, parent=None):
         super(GraphsTabs, self).__init__(parent)
-        self.tab1 = GraphTab()
-        self.tab2 = GraphTab()
-        self.tab3 = GraphTab()
+        self.tab1 = GraphTab(False)
+        self.tab2 = GraphTab(False)
+        self.tab3 = GraphTab(True)
 
         self.addTab(self.tab1, "Graph 1")
         self.addTab(self.tab2, "Graph 2")
@@ -24,12 +24,15 @@ class GraphsTabs(QTabWidget):
         self.setMinimumSize(900, 500)
 
 class GraphTab(QWidget):
-    def __init__(self):
+    def __init__(self, predictions):
         super(GraphTab, self).__init__()
 
-        graph = Figure()
-        self.graphCanvas = FigureCanvas(graph)
-        self.axis = self.graphCanvas.figure.subplots()
+        self.graph = Figure()
+        self.graphCanvas = FigureCanvas(self.graph)
+        if predictions is True:
+            self.axis = self.graphCanvas.figure.subplots(2, 3)
+        else:
+            self.axis = self.graphCanvas.figure.subplots()
 
         layout = QHBoxLayout()
         layout.addWidget(self.graphCanvas)
@@ -40,6 +43,11 @@ class GraphTab(QWidget):
     def draw(self):
         self.graphCanvas.draw()
 
+    def clear(self):
+        for x in range(2):
+            for y in range(3):
+                self.axis[x, y].clear()
+
 
 class Gui(QMainWindow):
     def __init__(self, parent=None):
@@ -47,6 +55,7 @@ class Gui(QMainWindow):
 
         self.trainDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\training"
         self.testDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\test"
+        self.predictDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\predictions"
 
         self.algorithmFlag = 0
 
@@ -54,12 +63,13 @@ class Gui(QMainWindow):
         self.menuBar = self.menuBar()
         fileMenu = self.menuBar.addMenu('File')
 
-        loadAction = QAction('Load', self)
+        loadAction = QAction('Load data', self)
         loadAction.triggered.connect(self.open_data_window)
         fileMenu.addAction(loadAction)
         resetAction = QAction('Reset', self)
         resetAction.triggered.connect(self.reset)
-        fileMenu.addAction(resetAction)
+        #fileMenu.addAction(resetAction)
+        self.menuBar.addAction(resetAction)
 
         #left panel
         self.algorithmLabel = QLabel('Select first algorithm to compare')
@@ -236,17 +246,21 @@ class Gui(QMainWindow):
         self.knn.setChecked(False)
         self.customCNN.setChecked(False)
 
-        self.loadModelButton.setEnabled(True)
-        self.evaluateButton.setEnabled(True)
+        self.loadModelButton.setEnabled(False)
+        self.evaluateButton.setEnabled(False)
+        self.saveModelButton.setEnabled(False)
 
         self.graphs.tab1.axis.clear()
         self.graphs.tab1.draw()
         self.graphs.tab2.axis.clear()
         self.graphs.tab2.draw()
-        self.graphs.tab3.axis.clear()
+        self.graphs.tab3.clear()
         self.graphs.tab3.draw()
 
-        self.graphs.setTabEnabled(0, False)
+        self.parameter.setText("")
+        self.consolePrint.setText("")
+
+        self.graphs.setTabEnabled(0, True)
         self.graphs.setTabEnabled(1, False)
         self.graphs.setTabEnabled(2, False)
 
@@ -255,7 +269,7 @@ class Gui(QMainWindow):
             self.knn.setEnabled(False)
             self.customCNN.setEnabled(False)
 
-            self.chosenAlgorithm = CNN(self.trainDir, self.testDir, self.consolePrint)
+            self.chosenAlgorithm = CNN(self.trainDir, self.testDir, self.predictDir, self.consolePrint)
 
         elif self.knn.isChecked():
             self.simpleCNN.setEnabled(False)
@@ -267,7 +281,7 @@ class Gui(QMainWindow):
             self.simpleCNN.setEnabled(False)
             self.knn.setEnabled(False)
 
-            self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, self.consolePrint)
+            self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, self.predictDir, self.consolePrint)
 
         self.chosenAlgorithm.createModel()
         self.trainButton.setEnabled(True)
@@ -295,9 +309,11 @@ class Gui(QMainWindow):
 
         elif self.customCNN.isChecked():
             self.chosenAlgorithm.trainModel(int(self.parameter.text()))
-            self.chosenAlgorithm.evaluateModel()
 
             self.chosenAlgorithm.accGraph(self.graphs.tab1.axis)
+            self.graphs.tab1.draw()
+            self.chosenAlgorithm.lossGraph(self.graphs.tab2.axis)
+            self.graphs.tab2.draw()
 
             self.saveModelButton.setEnabled(True)
             self.evaluateButton.setEnabled(True)
@@ -308,6 +324,8 @@ class Gui(QMainWindow):
             self.graphs.tab1.draw()
         else:
             self.chosenAlgorithm.evaluateModel()
+            self.chosenAlgorithm.predictGraph(self.graphs.tab3.axis)
+            self.graphs.tab3.draw()
 
     def saveModelClick(self):
         dlg = QFileDialog()
@@ -353,6 +371,11 @@ class LoadDataWindow(QMainWindow):
         self.test_data_lineedit.setReadOnly(True)
         self.test_data_button.clicked.connect(self.test_data_button_click)
 
+        self.predict_data_button = QPushButton("Load Predict Data")
+        self.predict_data_lineedit = QLineEdit()
+        self.predict_data_lineedit.setReadOnly(True)
+        self.predict_data_button.clicked.connect(self.predict_data_button_click)
+
         self.close_button = QPushButton("Close")
         self.close_button.clicked.connect(self.closeButton)
 
@@ -365,7 +388,9 @@ class LoadDataWindow(QMainWindow):
         main_layout.addWidget(self.training_data_button, 0, 4, 1, 1)
         main_layout.addWidget(self.test_data_lineedit, 1, 0, 1, 3)
         main_layout.addWidget(self.test_data_button, 1, 4, 1, 1)
-        main_layout.addWidget(self.close_button, 2, 1, 1, 2)
+        main_layout.addWidget(self.predict_data_lineedit, 2, 0, 1, 3)
+        main_layout.addWidget(self.predict_data_button, 2, 4, 1, 1)
+        main_layout.addWidget(self.close_button, 3, 1, 1, 2)
 
         main_widget = QWidget()
         main_widget.setLayout(main_layout)
@@ -382,12 +407,18 @@ class LoadDataWindow(QMainWindow):
             self.training_Data_lineedit.setText(file)
             self.parent().trainDir = file
 
-
-
     def test_data_button_click(self):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.Directory)
         file = dlg.getExistingDirectory(self, 'Select test data directory')
+        if file != "":
+            self.test_data_lineedit.setText(file)
+            self.parent().testDir = file
+
+    def predict_data_button_click(self):
+        dlg = QFileDialog()
+        dlg.setFileMode(QFileDialog.Directory)
+        file = dlg.getExistingDirectory(self, 'Select predict data directory')
         if file != "":
             self.test_data_lineedit.setText(file)
             self.parent().testDir = file

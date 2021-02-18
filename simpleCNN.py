@@ -1,5 +1,9 @@
 # Placeholder for validation data
 # To do: Change this later
+import io
+import random
+from contextlib import redirect_stdout
+
 from keras.preprocessing.image import ImageDataGenerator
 
 # Used to create model
@@ -12,25 +16,27 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 # Used to load data
-from data_prep import load_data, getNumberOfClasses
+from data_prep import *
 
 
 class CNN():
-    def __init__(self, trainDir, testDir, console):
+    def __init__(self, trainDir, testDir, predictDir, console):
 
         # Load data form data_prep file
         self.train_data = load_data(trainDir)
-        self.test_data = load_data(testDir)
+        self.validation_data = load_data(testDir)
+        self.prediction_data_batches, self.prediction_data = load_prediction_data(predictDir)
+        self.sorted_labels = get_sorted_labels(trainDir)
         self.console = console
 
         # Useful variables
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
-        self.width = 400
-        self.height = 400
+        self.width = 100
+        self.height = 100
 
         self.step_size_train = self.train_data.n // self.train_data.batch_size
-        self.step_size_test = self.test_data.n // self.test_data.batch_size
+        self.step_size_test = self.validation_data.n // self.validation_data.batch_size
 
         # self.accGraph(accPlot)
         # self.lossGraph()
@@ -45,12 +51,18 @@ class CNN():
         self.model.summary(print_fn=lambda x: self.console.append(x))
         self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
+
     def trainModel(self, epochs):
         self.epochs = epochs
-        self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.test_data)
+
+        self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.validation_data)
 
     def evaluateModel(self):
-        self.model.evaluate(self.test_data, batch_size=32)
+        # f = io.StringIO()
+        # with redirect_stdout(f):
+        #     self.results = self.model.evaluate(self.validation_data, batch_size=32)
+        # self.console.append(f.getvalue())
+        self.results = self.model.evaluate(self.validation_data, batch_size=32)
 
     def saveModel(self, path):
         self.model.save(path)
@@ -78,51 +90,19 @@ class CNN():
         lossPlot.set_xlim([1, self.epochs])
         lossPlot.legend()
 
-    # def predictGraph(self, testDir, predictPlot):
-    #     # To do: move this to data_prep file
-    #     score_generator = ImageDataGenerator().flow_from_directory(
-    #         directory=testDir,
-    #         target_size=(self.height, self.width),
-    #         color_mode="rgb",
-    #         batch_size=1,
-    #         class_mode="categorical",
-    #         shuffle=False
-    #     )
-    #
-    #     predicted_values = self.model.predict(score_generator, steps=score_generator.n // score_generator.batch_size,
-    #                                           verbose=1)
-    #
-    #     predicted_labels = []
-    #
-    #     for p in predicted_values:
-    #         predicted_labels.append(np.argmax(p))
-    #
-    #     from sklearn.metrics import classification_report, confusion_matrix
-    #     import itertools
-    #     # print(classification_report(score_generator.classes, predicted_labels, target_names=test_data.class_indices))
-    #
-    #     # To do: make it more readable
-    #     def plot_confusion_matrix(cm, classes,
-    #                               title='Confusion matrix',
-    #                               cmap=plt.cm.Blues):
-    #
-    #         predictPlot.title(title)
-    #         predictPlot.colorbar()
-    #         tick_marks = np.arange(len(classes))
-    #         predictPlot.xticks(tick_marks, classes, rotation=45)
-    #         predictPlot.yticks(tick_marks, classes)
-    #
-    #         fmt = 'd'
-    #         thresh = cm.max() / 2.
-    #         for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
-    #             predictPlot.text(j, i, format(cm[i, j], fmt),
-    #                      horizontalalignment="center",
-    #                      color="white" if cm[i, j] > thresh else "black")
-    #
-    #         predictPlot.ylabel('True label')
-    #         predictPlot.xlabel('Predicted label')
-    #         predictPlot.tight_layout()
-    #
-    #     cm = confusion_matrix(score_generator.classes, predicted_labels)
-    #     plot_confusion_matrix(cm, self.test_data.class_indices)
-    #     plt.show()
+    def predictGraph(self, predictGraph):
+        labels_str = []
+        for image in self.prediction_data_batches:
+            y_prob = self.model.predict(image)
+            y_classes = y_prob.argmax(axis=-1)
+            labels_str.append(self.sorted_labels[y_classes[0]])
+
+        r = random.sample(range(0, len(self.prediction_data)), k=6)
+        ind = 0
+        for x in range(2):
+            for y in range(3):
+                i = r[ind]
+                ind += 1
+                predictGraph[x, y].set_title(labels_str[i])
+                predictGraph[x, y].imshow(tf.keras.preprocessing.image.array_to_img(self.prediction_data[i]))
+                predictGraph[x, y].axis('off')
