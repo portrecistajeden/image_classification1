@@ -75,7 +75,11 @@ class CustomCNN:
             loss=keras.losses.CategoricalCrossentropy(from_logits=True),
             acc_metric=keras.metrics.CategoricalAccuracy(name='accuracy'),
         )
-        self.history = self.training.fit(self.train_data, batch_size=32, epochs=self.epochs, validation_data=self.validation_data)
+        self.history = self.training.fit(
+            self.train_data,
+            batch_size=32,
+            epochs=self.epochs,
+            validation_data=self.validation_data)
         # print(self.history)
 
     def evaluateModel(self):
@@ -97,25 +101,20 @@ class CustomCNN:
         self.model.add(Conv2D(64, (3, 3), activation='relu',))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.2))
-        #
-        # self.model.add(Conv2D(64, (3, 3), activation='relu'))
-        # self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        # self.model.add(Dropout(0.2))
-        #
-        # self.model.add(Conv2D(128, (3, 3), activation='relu'))
-        # self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        # self.model.add(Dropout(0.2))
+
+        self.model.add(Conv2D(128, (3, 3), activation='relu'))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Dropout(0.5))
 
         self.model.add(Flatten())
-        # self.model.add(Dropout(0.5))
-        #
-        self.model.add(Dense(128, activation='relu'))
-        self.model.add(Dropout(0.5))
+
+        #self.model.add(Dense(128, activation='relu'))
+        #self.model.add(Dropout(0.5))
 
         self.model.add(Dense(self.classes, activation='softmax'))
 
         self.model.summary(print_fn=lambda x: self.console.append(x))
-        self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+        self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
 
 
     def accGraph(self, accPlot):

@@ -58,11 +58,11 @@ class CNN():
         self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.validation_data)
 
     def evaluateModel(self):
-        # f = io.StringIO()
-        # with redirect_stdout(f):
-        #     self.results = self.model.evaluate(self.validation_data, batch_size=32)
-        # self.console.append(f.getvalue())
-        self.results = self.model.evaluate(self.validation_data, batch_size=32)
+        f = io.StringIO()
+        with redirect_stdout(f):
+            self.results = self.model.evaluate(self.validation_data, batch_size=32)
+        self.console.append(f.getvalue())
+        # self.results = self.model.evaluate(self.validation_data, batch_size=32)
 
     def saveModel(self, path):
         self.model.save(path)
