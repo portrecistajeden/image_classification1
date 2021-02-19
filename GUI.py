@@ -53,9 +53,9 @@ class Gui(QMainWindow):
     def __init__(self, parent=None):
         super(Gui, self).__init__(parent)
 
-        self.trainDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\training"
-        self.testDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\test"
-        self.predictDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\predictions"
+        self.trainDir = "C:\\Users\\piawr\\Desktop\\image_classification1\\db\\training"
+        self.testDir = "C:\\Users\\piawr\\Desktop\\image_classification1\\db\\validation"
+        self.predictDir = "C:\\Users\\piawr\\Desktop\\image_classification1\\db\\predictions"
 
         self.algorithmFlag = 0
 

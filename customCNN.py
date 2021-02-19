@@ -14,47 +14,47 @@ import matplotlib.pyplot as plt
 
 from data_prep import *
 
-
-class CustomFit(keras.Model):
-    def call(self, inputs, training=None, mask=None):
-        pass
-
-    def __init__(self, model):
-        super(CustomFit, self).__init__()
-        self.model = model
-
-    def compile(self, optimizer, loss, acc_metric):
-        super(CustomFit, self).compile()
-        self.optimizer = optimizer
-        self.loss = loss
-        self.acc_metric = acc_metric
-
-    @tf.function
-    def train_step(self, data):
-        x, y = data
-
-        with tf.GradientTape() as tape:
-            pred = self.model(x, training=True)
-            loss_value = self.loss(y, pred)
-
-        #compute gradients
-        trainable_weights = self.model.trainable_weights
-        gradients = tape.gradient(loss_value, trainable_weights)
-        #update weights
-        self.optimizer.apply_gradients(zip(gradients, trainable_weights))
-
-        self.acc_metric.update_state(y, pred)
-
-        return {"loss": loss_value, "accuracy": self.acc_metric.result()}
-
-    @tf.function
-    def test_step(self, data):
-        x, y = data
-        pred = self.model(x, training=True)
-        loss_value = self.loss(y, pred)
-        self.acc_metric.update_state(y, pred)
-
-        return {"loss": loss_value, "accuracy": self.acc_metric.result()}
+#
+# class CustomFit(keras.Model):
+#     def call(self, inputs, training=None, mask=None):
+#         pass
+#
+#     def __init__(self, model):
+#         super(CustomFit, self).__init__()
+#         self.model = model
+#
+#     def compile(self, optimizer, loss, acc_metric):
+#         super(CustomFit, self).compile()
+#         self.optimizer = optimizer
+#         self.loss = loss
+#         self.acc_metric = acc_metric
+#
+#     @tf.function
+#     def train_step(self, data):
+#         x, y = data
+#
+#         with tf.GradientTape() as tape:
+#             pred = self.model(x, training=True)
+#             loss_value = self.loss(y, pred)
+#
+#         #compute gradients
+#         trainable_weights = self.model.trainable_weights
+#         gradients = tape.gradient(loss_value, trainable_weights)
+#         #update weights
+#         self.optimizer.apply_gradients(zip(gradients, trainable_weights))
+#
+#         self.acc_metric.update_state(y, pred)
+#
+#         return {"loss": loss_value, "accuracy": self.acc_metric.result()}
+#
+#     @tf.function
+#     def test_step(self, data):
+#         x, y = data
+#         pred = self.model(x, training=True)
+#         loss_value = self.loss(y, pred)
+#         self.acc_metric.update_state(y, pred)
+#
+#         return {"loss": loss_value, "accuracy": self.acc_metric.result()}
 
 class CustomCNN:
     def __init__(self, trainDir, testDir, predictDir, console):
@@ -84,10 +84,10 @@ class CustomCNN:
         #     batch_size=32,
         #     epochs=self.epochs,
         #     validation_data=self.validation_data)
-        self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.validation_data)
+        self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.validation_data, batch_size=32)
 
     def evaluateModel(self):
-        self.training.evaluate(self.validation_data, batch_size=32)
+        self.model.evaluate(self.validation_data, batch_size=32)
 
     def loadModel(self, path):
         self.model = tf.keras.models.load_model(path)
@@ -96,24 +96,30 @@ class CustomCNN:
         self.model.save(path)
 
     def createModel(self):
+        resize_and_rescale = tf.keras.Sequential([
+            layers.experimental.preprocessing.Rescaling(1./255)
+        ])
+        data_augmentation = tf.keras.Sequential([
+            layers.experimental.preprocessing.RandomFlip("horizontal_and_vertical"),
+            layers.experimental.preprocessing.RandomRotation(0.2)
+        ])
         self.model = Sequential()
 
-        self.model.add(Conv2D(64, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
-        self.model.add(Conv2D(64, (3, 3), activation='relu',))
+        self.model.add(Conv2D(64, (3, 3), activation='relu', kernel_regularizer='l2', input_shape=(self.height, self.width, 3)))
+
+        self.model.add(resize_and_rescale)
+        self.model.add(data_augmentation)
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
-        self.model.add(Conv2D(64, (3, 3), activation='relu', ))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.25))
-
-        self.model.add(Conv2D(64, (3, 3), activation='relu', ))
+        self.model.add(Conv2D(128, (3, 3), activation='relu', ))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
         self.model.add(Flatten())
 
-        self.model.add(Dense(128, activation='relu'))
+        self.model.add(Dense(256, activation='relu'))
+        self.model.add(Dense(64, activation='relu'))
 
         self.model.add(Dense(self.classes, activation='softmax'))
 
