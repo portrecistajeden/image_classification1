@@ -7,7 +7,7 @@ from keras import layers
 import os
 from PIL import Image
 
-target_size = (400, 400)
+target_size = (100, 100)
 
 def load_data(dirPath):
     data = ImageDataGenerator().flow_from_directory(

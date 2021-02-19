@@ -53,9 +53,9 @@ class Gui(QMainWindow):
     def __init__(self, parent=None):
         super(Gui, self).__init__(parent)
 
-        self.trainDir = "C:\\Users\\piawr\\Desktop\\image_classification1\\baza\\FIDS30"
-        self.testDir = "C:\\Users\\piawr\\Desktop\\image_classification1\\baza\\Validation"
-        self.predictDir = "C:\\Users\\piawr\\Desktop\\image_classification1\\baza\\test"
+        self.trainDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\training"
+        self.testDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\test"
+        self.predictDir = "C:\\Users\\piawr\\Desktop\\inżynierk\\minibazka\\predictions"
 
         self.algorithmFlag = 0
 
@@ -377,16 +377,19 @@ class LoadDataWindow(QMainWindow):
         self.training_data_button = QPushButton("Load Training Data")
         self.training_Data_lineedit = QLineEdit()
         self.training_Data_lineedit.setReadOnly(True)
+        self.training_Data_lineedit.setText(self.parent().trainDir)
         self.training_data_button.clicked.connect(self.training_data_button_click)
 
         self.validation_data_button = QPushButton("Load Validation Data")
         self.validation_data_lineedit = QLineEdit()
         self.validation_data_lineedit.setReadOnly(True)
+        self.validation_data_lineedit.setText(self.parent().testDir)
         self.validation_data_button.clicked.connect(self.test_data_button_click)
 
         self.predict_data_button = QPushButton("Load Predict Data")
         self.predict_data_lineedit = QLineEdit()
         self.predict_data_lineedit.setReadOnly(True)
+        self.predict_data_lineedit.setText(self.parent().predictDir)
         self.predict_data_button.clicked.connect(self.predict_data_button_click)
 
         self.close_button = QPushButton("Close")

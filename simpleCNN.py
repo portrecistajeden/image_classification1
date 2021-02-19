@@ -32,8 +32,8 @@ class CNN():
         # Useful variables
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
-        self.width = 400
-        self.height = 400
+        self.width = 100
+        self.height = 100
 
         self.step_size_train = self.train_data.n // self.train_data.batch_size
         self.step_size_test = self.validation_data.n // self.validation_data.batch_size

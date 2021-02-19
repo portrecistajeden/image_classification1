@@ -38,10 +38,10 @@ class CustomFit(keras.Model):
             loss_value = self.loss(y, pred)
 
         #compute gradients
-        trainable_vars = self.trainable_variables
-        gradients = tape.gradient(loss_value, trainable_vars)
+        trainable_weights = self.model.trainable_weights
+        gradients = tape.gradient(loss_value, trainable_weights)
         #update weights
-        self.optimizer.apply_gradients(zip(gradients, trainable_vars))
+        self.optimizer.apply_gradients(zip(gradients, trainable_weights))
 
         self.acc_metric.update_state(y, pred)
 
@@ -68,23 +68,23 @@ class CustomCNN:
         # Useful variables
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
-        self.width = 400
-        self.height = 400
+        self.width = 100
+        self.height = 100
 
     def trainModel(self, epochs):
         self.epochs = epochs
-        self.training = CustomFit(self.model)
-        self.training.compile(
-            optimizer=keras.optimizers.Adam(),
-            loss=keras.losses.CategoricalCrossentropy(from_logits=True),
-            acc_metric=keras.metrics.CategoricalAccuracy(name='accuracy'),
-        )
-        self.history = self.training.fit(
-            self.train_data,
-            batch_size=32,
-            epochs=self.epochs,
-            validation_data=self.validation_data)
-        # print(self.history)
+        # self.training = CustomFit(self.model)
+        # self.training.compile(
+        #     optimizer=keras.optimizers.Adam(),
+        #     loss=keras.losses.CategoricalCrossentropy(from_logits=True),
+        #     acc_metric=keras.metrics.CategoricalAccuracy(name='accuracy'),
+        # )
+        # self.history = self.training.fit(
+        #     self.train_data,
+        #     batch_size=32,
+        #     epochs=self.epochs,
+        #     validation_data=self.validation_data)
+        self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.validation_data)
 
     def evaluateModel(self):
         self.training.evaluate(self.validation_data, batch_size=32)
@@ -98,23 +98,22 @@ class CustomCNN:
     def createModel(self):
         self.model = Sequential()
 
-        self.model.add(Conv2D(32, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
-        self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
-
+        self.model.add(Conv2D(64, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
         self.model.add(Conv2D(64, (3, 3), activation='relu',))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
+        self.model.add(Dropout(0.25))
 
-        self.model.add(Conv2D(128, (3, 3), activation='relu'))
+        self.model.add(Conv2D(64, (3, 3), activation='relu', ))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
-        self.model.add(Dropout(0.2))
+        self.model.add(Dropout(0.25))
+
+        self.model.add(Conv2D(64, (3, 3), activation='relu', ))
+        self.model.add(MaxPooling2D(pool_size=(2, 2)))
+        self.model.add(Dropout(0.25))
 
         self.model.add(Flatten())
-        self.model.add(Dropout(0.5))
 
         self.model.add(Dense(128, activation='relu'))
-        self.model.add(Dropout(0.5))
 
         self.model.add(Dense(self.classes, activation='softmax'))
 
