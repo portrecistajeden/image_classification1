@@ -434,4 +434,4 @@ class LoadDataWindow(QMainWindow):
         file = dlg.getExistingDirectory(self, 'Select predict data directory')
         if file != "":
             self.predict_data_lineedit.setText(file)
-            self.parent().testDir = file
+            self.parent().predictDir = file

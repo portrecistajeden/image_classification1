@@ -11,6 +11,7 @@ from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 # Used to show graphs
 import numpy as np
 import matplotlib.pyplot as plt
+from keras.optimizers import SGD
 
 from data_prep import *
 
@@ -115,7 +116,8 @@ class CustomCNN:
         self.model.add(Dense(self.classes, activation='softmax'))
 
         self.model.summary(print_fn=lambda x: self.console.append(x))
-        self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+        opt = SGD(lr=0.001, momentum=0.9)
+        self.model.compile(optimizer=opt, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
     def accGraph(self, accPlot):
