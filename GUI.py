@@ -1,7 +1,7 @@
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIntValidator
 from PyQt5.QtWidgets import QMainWindow, QGraphicsScene, QGridLayout, QPushButton, QHBoxLayout, QVBoxLayout, QWidget, \
-    QLineEdit, QLabel, QTextBrowser, QCheckBox, QAction, QMenu, QFrame, QFileDialog, QTabWidget
+    QLineEdit, QLabel, QTextBrowser, QCheckBox, QAction, QMenu, QFrame, QFileDialog, QTabWidget, QComboBox
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
 from matplotlib.figure import Figure
@@ -112,6 +112,12 @@ class Gui(QMainWindow):
         self.errorLabel.setStyleSheet("color: red")
         self.errorLabel.setVisible(False)
 
+        self.optimizerLabel = QLabel('Optimizer: ')
+        self.optimizer = QComboBox()
+        self.optimizer.addItem('adam')
+        self.optimizer.addItem('rmsprop')
+
+
         #right panel
         self.graphs = GraphsTabs()
 
@@ -120,7 +126,7 @@ class Gui(QMainWindow):
         self.consolePrint.setReadOnly(True)
         self.consolePrint.setPlaceholderText('console print')
         self.consolePrint.setMinimumHeight(50)
-        self.consolePrint.setMaximumHeight(200)
+        self.consolePrint.setMaximumHeight(300)
         self.consolePrint.setAlignment(Qt.AlignTop)
 
         self.prepare_gui()
@@ -147,6 +153,13 @@ class Gui(QMainWindow):
         left_part.addWidget(self.parameter)
         left_part.addWidget(self.errorLabel)
 
+        cnnParameters = QGridLayout()
+        cnnParameters.addWidget(self.optimizerLabel, 0, 0)
+        cnnParameters.addWidget(self.optimizer, 0, 1)
+        cnnParametersFrame = QFrame()
+        cnnParametersFrame.setLayout(cnnParameters)
+        left_part.addWidget(cnnParametersFrame)
+
         left_panel.addLayout(left_part)
 
 
@@ -163,7 +176,7 @@ class Gui(QMainWindow):
         top_layout.addLayout(right_panel)
         topFrame = QFrame()
         topFrame.setLayout(top_layout)
-        topFrame.setMinimumHeight(700)
+        topFrame.setMinimumHeight(600)
 
         bottom_layout = QHBoxLayout()
         buttons = QVBoxLayout()
@@ -176,7 +189,7 @@ class Gui(QMainWindow):
         bottom_layout.addWidget(self.consolePrint)
         bottomFrame = QFrame()
         bottomFrame.setLayout(bottom_layout)
-        bottomFrame.setFixedHeight(150)
+        bottomFrame.setMaximumHeight(300)
 
         main_layout = QGridLayout()
         main_layout.addWidget(topFrame, 0, 0)
@@ -191,6 +204,8 @@ class Gui(QMainWindow):
             if self.sender() == self.simpleCNN:
                 self.algorithmFlag = 1
 
+                self.parameterLabel.setText('Epochs:')
+
                 self.knn.setChecked(False)
                 self.customCNN.setChecked(False)
 
@@ -204,6 +219,8 @@ class Gui(QMainWindow):
             elif self.sender() == self.knn:
                 self.algorithmFlag = 2
 
+                self.parameterLabel.setText('Parameter k:')
+
                 self.simpleCNN.setChecked(False)
                 self.customCNN.setChecked(False)
 
@@ -216,6 +233,8 @@ class Gui(QMainWindow):
 
             else:
                 self.algorithmFlag = 3
+
+                self.parameterLabel.setText('Epochs:')
 
                 self.knn.setChecked(False)
                 self.simpleCNN.setChecked(False)
@@ -242,6 +261,8 @@ class Gui(QMainWindow):
 
     def reset(self):
         self.chosenAlgorithm = None
+
+        self.parameterLabel.setText('Parameter k/epochs:')
 
         self.simpleCNN.setEnabled(True)
         self.knn.setEnabled(True)
@@ -274,7 +295,7 @@ class Gui(QMainWindow):
             self.knn.setEnabled(False)
             self.customCNN.setEnabled(False)
 
-            self.chosenAlgorithm = CNN(self.trainDir, self.testDir, self.predictDir, self.consolePrint)
+            self.chosenAlgorithm = CNN(self.trainDir, self.testDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
 
         elif self.knn.isChecked():
             self.simpleCNN.setEnabled(False)
@@ -286,7 +307,7 @@ class Gui(QMainWindow):
             self.simpleCNN.setEnabled(False)
             self.knn.setEnabled(False)
 
-            self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, self.predictDir, self.consolePrint)
+            self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
 
         self.chosenAlgorithm.createModel()
         self.trainButton.setEnabled(True)

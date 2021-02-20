@@ -20,7 +20,7 @@ from data_prep import *
 
 
 class CNN():
-    def __init__(self, trainDir, testDir, predictDir, console):
+    def __init__(self, trainDir, testDir, predictDir, optimizer, console):
 
         # Load data form data_prep file
         self.train_data = load_data(trainDir)
@@ -28,6 +28,7 @@ class CNN():
         self.prediction_data_batches, self.prediction_data = load_prediction_data(predictDir)
         self.sorted_labels = get_sorted_labels(trainDir)
         self.console = console
+        self.optimizer = optimizer
 
         # Useful variables
         # To do: let user change this
@@ -49,7 +50,7 @@ class CNN():
         self.model.add(Dense(self.classes, activation='softmax'))
 
         self.model.summary(print_fn=lambda x: self.console.append(x))
-        self.model.compile(optimizer='rmsprop', loss='categorical_crossentropy', metrics=['accuracy'])
+        self.model.compile(optimizer=self.optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
     def trainModel(self, epochs):

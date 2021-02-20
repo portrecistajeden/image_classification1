@@ -1,4 +1,6 @@
+import io
 import random
+from contextlib import redirect_stdout
 
 import keras
 import tensorflow as tf
@@ -57,14 +59,14 @@ class CustomFit(keras.Model):
         return {"loss": loss_value, "accuracy": self.acc_metric.result()}
 
 class CustomCNN:
-    def __init__(self, trainDir, testDir, predictDir, console):
+    def __init__(self, trainDir, testDir, predictDir, optimizer, console):
         # Load data form data_prep file
         self.train_data = load_dataCustom(trainDir)
         self.validation_data = load_dataCustom(testDir)
         self.prediction_data_batches, self.prediction_data = load_prediction_data(predictDir)
         self.sorted_labels = get_sorted_labels(trainDir)
         self.console = console
-
+        self.optimizer = optimizer
         # Useful variables
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
@@ -87,7 +89,10 @@ class CustomCNN:
         self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.validation_data)
 
     def evaluateModel(self):
-        self.training.evaluate(self.validation_data, batch_size=32)
+        f = io.StringIO()
+        with redirect_stdout(f):
+            self.training.evaluate(self.validation_data, batch_size=32)
+        self.console.append(f.getvalue())
 
     def loadModel(self, path):
         self.model = tf.keras.models.load_model(path)
@@ -103,11 +108,11 @@ class CustomCNN:
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
-        self.model.add(Conv2D(64, (3, 3), activation='relu', ))
+        self.model.add(Conv2D(128, (3, 3), activation='relu', ))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
-        self.model.add(Conv2D(64, (3, 3), activation='relu', ))
+        self.model.add(Conv2D(128, (3, 3), activation='relu', ))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
@@ -118,7 +123,7 @@ class CustomCNN:
         self.model.add(Dense(self.classes, activation='softmax'))
 
         self.model.summary(print_fn=lambda x: self.console.append(x))
-        self.model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+        self.model.compile(optimizer=self.optimizer, loss='categorical_crossentropy', metrics=['accuracy'])
 
 
     def accGraph(self, accPlot):
