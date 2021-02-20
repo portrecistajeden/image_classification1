@@ -17,46 +17,46 @@ import matplotlib.pyplot as plt
 from data_prep import *
 
 
-class CustomFit(keras.Model):
-    def call(self, inputs, training=None, mask=None):
-        pass
-
-    def __init__(self, model):
-        super(CustomFit, self).__init__()
-        self.model = model
-
-    def compile(self, optimizer, loss, acc_metric):
-        super(CustomFit, self).compile()
-        self.optimizer = optimizer
-        self.loss = loss
-        self.acc_metric = acc_metric
-
-    @tf.function
-    def train_step(self, data):
-        x, y = data
-
-        with tf.GradientTape() as tape:
-            pred = self.model(x, training=True)
-            loss_value = self.loss(y, pred)
-
-        #compute gradients
-        trainable_weights = self.model.trainable_weights
-        gradients = tape.gradient(loss_value, trainable_weights)
-        #update weights
-        self.optimizer.apply_gradients(zip(gradients, trainable_weights))
-
-        self.acc_metric.update_state(y, pred)
-
-        return {"loss": loss_value, "accuracy": self.acc_metric.result()}
-
-    @tf.function
-    def test_step(self, data):
-        x, y = data
-        pred = self.model(x, training=True)
-        loss_value = self.loss(y, pred)
-        self.acc_metric.update_state(y, pred)
-
-        return {"loss": loss_value, "accuracy": self.acc_metric.result()}
+# class CustomFit(keras.Model):
+#     def call(self, inputs, training=None, mask=None):
+#         pass
+#
+#     def __init__(self, model):
+#         super(CustomFit, self).__init__()
+#         self.model = model
+#
+#     def compile(self, optimizer, loss, acc_metric):
+#         super(CustomFit, self).compile()
+#         self.optimizer = optimizer
+#         self.loss = loss
+#         self.acc_metric = acc_metric
+#
+#     @tf.function
+#     def train_step(self, data):
+#         x, y = data
+#
+#         with tf.GradientTape() as tape:
+#             pred = self.model(x, training=True)
+#             loss_value = self.loss(y, pred)
+#
+#         #compute gradients
+#         trainable_weights = self.model.trainable_weights
+#         gradients = tape.gradient(loss_value, trainable_weights)
+#         #update weights
+#         self.optimizer.apply_gradients(zip(gradients, trainable_weights))
+#
+#         self.acc_metric.update_state(y, pred)
+#
+#         return {"loss": loss_value, "accuracy": self.acc_metric.result()}
+#
+#     @tf.function
+#     def test_step(self, data):
+#         x, y = data
+#         pred = self.model(x, training=True)
+#         loss_value = self.loss(y, pred)
+#         self.acc_metric.update_state(y, pred)
+#
+#         return {"loss": loss_value, "accuracy": self.acc_metric.result()}
 
 class CustomCNN:
     def __init__(self, trainDir, testDir, predictDir, optimizer, console):
