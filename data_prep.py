@@ -9,6 +9,9 @@ from PIL import Image
 
 target_size = (100, 100)
 
+def getTargetSize():
+    return target_size
+
 def load_data(dirPath):
     data = ImageDataGenerator().flow_from_directory(
         directory = dirPath, #

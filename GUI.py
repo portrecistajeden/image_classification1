@@ -229,7 +229,7 @@ class Gui(QMainWindow):
 
                 self.graphs.setTabEnabled(0, True)
                 self.graphs.setTabEnabled(1, False)
-                self.graphs.setTabEnabled(2, False)
+                self.graphs.setTabEnabled(2, True)
 
             else:
                 self.algorithmFlag = 3
@@ -354,8 +354,12 @@ class Gui(QMainWindow):
 
     def evaluateClick(self):
         if self.algorithmFlag == 2:
-            self.chosenAlgorithm.evaluateModel(int(self.parameter.text()), self.graphs.tab1.axis, self.consolePrint)
+            self.chosenAlgorithm.evaluateModel(int(self.parameter.text()),
+                                               self.graphs.tab1.axis,
+                                               self.graphs.tab3.axis,
+                                               self.consolePrint)
             self.graphs.tab1.draw()
+            self.graphs.tab3.draw()
         else:
             self.chosenAlgorithm.evaluateModel()
             self.chosenAlgorithm.predictGraph(self.graphs.tab3.axis)
