@@ -71,16 +71,11 @@ def load_data_KNN(dirPath):
             imgPath = path + '/' + entry2.name
             img1 = Image.open(imgPath)
             img = img1.resize(target_size)
-            img = np.array(img, dtype=np.int)
-            #img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
+            img = np.array(img, dtype=np.float32)
             if len(img.shape) != 3:
                 break
             img = imageTo1DVector(img)
-            #imgStacked = np.vstack(img).astype(np.float32)
-            #imgStacked = imgStacked.flatten()
-            #img = img[:, :, 0]
             img = img.flatten()
-            #print(img)
             data.append(img)
             labelsNum.append(i)
 
@@ -100,7 +95,6 @@ def load_test_KNN(dirPath):
             img1 = Image.open(imgPath)
             img = img1.resize(target_size)
             img = np.array(img, dtype=np.float32)
-            #img = cv2.cvtColor(img, cv2.COLOR_RGB2HSV)
             if len(img.shape) != 3:
                 break
             img = imageTo1DVector(img)

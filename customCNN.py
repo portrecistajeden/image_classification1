@@ -75,17 +75,6 @@ class CustomCNN:
 
     def trainModel(self, epochs):
         self.epochs = epochs
-        # self.training = CustomFit(self.model)
-        # self.training.compile(
-        #     optimizer=keras.optimizers.Adam(),
-        #     loss=keras.losses.CategoricalCrossentropy(from_logits=True),
-        #     acc_metric=keras.metrics.CategoricalAccuracy(name='accuracy'),
-        # )
-        # self.history = self.training.fit(
-        #     self.train_data,
-        #     batch_size=32,
-        #     epochs=self.epochs,
-        #     validation_data=self.validation_data)
         self.history = self.model.fit(x=self.train_data, epochs=self.epochs, validation_data=self.validation_data)
 
     def evaluateModel(self):
@@ -101,9 +90,18 @@ class CustomCNN:
         self.model.save(path)
 
     def createModel(self):
+        resize_and_rescale = tf.keras.Sequential([
+            layers.experimental.preprocessing.Rescaling(1. / 255)
+        ])
+        data_augmentation = tf.keras.Sequential([
+            layers.experimental.preprocessing.RandomFlip("horizontal_and_vertical"),
+            layers.experimental.preprocessing.RandomRotation(0.2)
+        ])
         self.model = Sequential()
 
         self.model.add(Conv2D(64, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
+        self.model.add(resize_and_rescale)
+        self.model.add(data_augmentation)
         self.model.add(Conv2D(64, (3, 3), activation='relu',))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))

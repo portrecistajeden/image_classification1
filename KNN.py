@@ -1,9 +1,6 @@
 import random
 
 from data_prep import *
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.model_selection import train_test_split
-from sklearn.datasets import load_iris
 
 class KNN():
     def __init__(self, trainDir, testDir):
@@ -40,6 +37,7 @@ class KNN():
             accPlot.set_xlabel("k Value")
             accPlot.set_ylabel("Accuracy %")
             accPlot.set_xlim([1, 15])
+            accPlot.set_xticks(y)
             accPlot.legend()
         else:
             ret, result, neighbours, dist = self.knn.findNearest(self.predictionData, k)
