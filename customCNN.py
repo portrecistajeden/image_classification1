@@ -8,7 +8,7 @@ from keras.preprocessing.image import ImageDataGenerator
 
 # Used to create model
 from keras.models import Sequential
-from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
+from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout, Input
 
 # Used to show graphs
 import numpy as np
@@ -98,19 +98,19 @@ class CustomCNN:
             layers.experimental.preprocessing.RandomRotation(0.2)
         ])
         self.model = Sequential()
-
-        self.model.add(Conv2D(64, (3, 3), activation='relu', input_shape=(self.height, self.width, 3)))
+        self.model.add(Input(shape=(self.height, self.width, 3)))
         self.model.add(resize_and_rescale)
         self.model.add(data_augmentation)
-        self.model.add(Conv2D(64, (3, 3), activation='relu',))
+
+        self.model.add(Conv2D(64, (5, 5), activation='relu'))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
-        self.model.add(Conv2D(128, (3, 3), activation='relu', ))
+        self.model.add(Conv2D(128, (3, 3), activation='relu'))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
-        self.model.add(Conv2D(128, (3, 3), activation='relu', ))
+        self.model.add(Conv2D(256, (3, 3), activation='relu'))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
