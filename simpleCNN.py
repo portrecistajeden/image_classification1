@@ -73,8 +73,8 @@ class CNN():
         accPlot.plot(arr, self.history.history["accuracy"], label="train_acc")
         accPlot.plot(arr, self.history.history["val_accuracy"], label="val_acc")
         accPlot.set_title("Training accuracy")
-        accPlot.set_xlabel("epoch #")
-        accPlot.set_ylabel("accuracy")
+        accPlot.set_xlabel("Epoch")
+        accPlot.set_ylabel("Accuracy")
         accPlot.set_xlim([1, self.epochs])
         accPlot.legend()
 
@@ -83,8 +83,8 @@ class CNN():
         lossPlot.plot(arr, self.history.history["loss"], label="train_loss")
         lossPlot.plot(arr, self.history.history["val_loss"], label="val_loss")
         lossPlot.set_title("Training loss")
-        lossPlot.set_xlabel("epoch #")
-        lossPlot.set_ylabel("loss")
+        lossPlot.set_xlabel("Epoch")
+        lossPlot.set_ylabel("Loss")
         lossPlot.set_xlim([1, self.epochs])
         lossPlot.legend()
 
