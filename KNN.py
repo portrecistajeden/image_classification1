@@ -3,16 +3,16 @@ import random
 from data_prep import *
 
 class KNN():
-    def __init__(self, trainDir, testDir):
+    def __init__(self, trainDir, validationDir):
         self.trainDir = trainDir
-        self.testDir = testDir
+        self.predictionsDir = validationDir
 
     def createModel(self):
         self.knn = cv2.ml.KNearest_create()
 
     def trainModel(self):
         self.trainData, self.trainLabels, self.labelsDictionary = load_data_KNN(self.trainDir)
-        self.predictionData, self.predictionLabels = load_test_KNN(self.testDir)
+        self.predictionData, self.predictionLabels = load_test_KNN(self.predictionsDir)
         self.knn.train(self.trainData, cv2.ml.ROW_SAMPLE, self.trainLabels)
 
     def evaluateModel(self, k, accPlot, predictGraph, console):

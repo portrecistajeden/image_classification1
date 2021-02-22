@@ -39,7 +39,7 @@ class CustomCNN:
     def evaluateModel(self):
         f = io.StringIO()
         with redirect_stdout(f):
-            self.training.evaluate(self.validation_data, batch_size=32)
+            self.model.evaluate(self.validation_data, batch_size=32)
         self.console.append(f.getvalue())
 
     def loadModel(self, path):

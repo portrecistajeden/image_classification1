@@ -54,7 +54,7 @@ class Gui(QMainWindow):
         super(Gui, self).__init__(parent)
 
         self.trainDir = "C:\\Users\\piawr\\Desktop\\image_classification1\\db\\training"
-        self.testDir = "C:\\Users\\piawr\\Desktop\\image_classification1\\db\\validation"
+        self.validationDir = "C:\\Users\\piawr\\Desktop\\image_classification1\\db\\validation"
         self.predictDir = "C:\\Users\\piawr\\Desktop\\image_classification1\\db\\predictions"
 
         self.algorithmFlag = 0
@@ -295,19 +295,19 @@ class Gui(QMainWindow):
             self.knn.setEnabled(False)
             self.customCNN.setEnabled(False)
 
-            self.chosenAlgorithm = CNN(self.trainDir, self.testDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
+            self.chosenAlgorithm = CNN(self.trainDir, self.validationDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
 
         elif self.knn.isChecked():
             self.simpleCNN.setEnabled(False)
             self.customCNN.setEnabled(False)
 
-            self.chosenAlgorithm = KNN(self.trainDir, self.testDir)
+            self.chosenAlgorithm = KNN(self.trainDir, self.validationDir)
 
         elif self.customCNN.isChecked():
             self.simpleCNN.setEnabled(False)
             self.knn.setEnabled(False)
 
-            self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
+            self.chosenAlgorithm = CustomCNN(self.trainDir, self.validationDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
 
         self.chosenAlgorithm.createModel()
         self.trainButton.setEnabled(True)
@@ -382,10 +382,10 @@ class Gui(QMainWindow):
             loadPath = file
 
         if self.algorithmFlag == 1:
-            self.chosenAlgorithm = CNN(self.trainDir, self.testDir)
+            self.chosenAlgorithm = CNN(self.trainDir, self.validationDir)
             self.chosenAlgorithm.loadModel(loadPath)
         elif self.algorithmFlag == 3:
-            self.chosenAlgorithm = CustomCNN(self.trainDir, self.testDir, self.consolePrint)
+            self.chosenAlgorithm = CustomCNN(self.trainDir, self.validationDir, self.consolePrint)
             self.chosenAlgorithm.loadModel(loadPath)
 
         self.saveModelButton.setEnabled(True)
@@ -408,7 +408,7 @@ class LoadDataWindow(QMainWindow):
         self.validation_data_button = QPushButton("Load Validation Data")
         self.validation_data_lineedit = QLineEdit()
         self.validation_data_lineedit.setReadOnly(True)
-        self.validation_data_lineedit.setText(self.parent().testDir)
+        self.validation_data_lineedit.setText(self.parent().validationDir)
         self.validation_data_button.clicked.connect(self.test_data_button_click)
 
         self.predict_data_button = QPushButton("Load Predict Data")
@@ -454,7 +454,7 @@ class LoadDataWindow(QMainWindow):
         file = dlg.getExistingDirectory(self, 'Select validation data directory')
         if file != "":
             self.validation_data_lineedit.setText(file)
-            self.parent().testDir = file
+            self.parent().validationDir = file
 
     def predict_data_button_click(self):
         dlg = QFileDialog()
