@@ -72,7 +72,7 @@ def load_data_KNN(dirPath):
             img1 = Image.open(imgPath)
             img = img1.resize(target_size)
             img = np.array(img, dtype=np.float32)
-            if len(img.shape) != 3:
+            if len(img.shape) != 3 or img.shape[2] != 3:
                 break
             img = imageTo1DVector(img)
             img = img.flatten()
@@ -95,13 +95,15 @@ def load_test_KNN(dirPath):
             img1 = Image.open(imgPath)
             img = img1.resize(target_size)
             img = np.array(img, dtype=np.float32)
-            if len(img.shape) != 3:
+            print(img.shape)
+            if len(img.shape) != 3 or img.shape[2] != 3:
                 break
             img = imageTo1DVector(img)
-            #img = np.vstack(img).astype(np.float32)
             img = img.flatten()
             data.append(img)
             labelsStr.append(entry.name)
+    for elem in data:
+        print(f"shape: {elem.shape} data: {elem}")
 
     data = np.array(data, dtype=np.float32)
     labelsStr = np.array(labelsStr, dtype=np.str)
