@@ -29,8 +29,8 @@ class CustomCNN:
         # Useful variables
         # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
-        self.width = 100
-        self.height = 100
+        self.width = 200
+        self.height = 200
 
     def trainModel(self, epochs):
         self.epochs = epochs
@@ -61,21 +61,21 @@ class CustomCNN:
         self.model.add(resize_and_rescale)
         self.model.add(data_augmentation)
 
-        self.model.add(Conv2D(64, (5, 5), activation='relu'))
+        self.model.add(Conv2D(64, (5, 5), activation='relu', kernel_regularizer='l1'))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
-        self.model.add(Conv2D(128, (3, 3), activation='relu'))
+        self.model.add(Conv2D(128, (3, 3), activation='relu', kernel_regularizer='l1'))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
-        self.model.add(Conv2D(256, (3, 3), activation='relu'))
+        self.model.add(Conv2D(256, (3, 3), activation='relu', kernel_regularizer='l1'))
         self.model.add(MaxPooling2D(pool_size=(2, 2)))
         self.model.add(Dropout(0.25))
 
         self.model.add(Flatten())
 
-        self.model.add(Dense(128, activation='relu'))
+        self.model.add(Dense(256, activation='relu'))
 
         self.model.add(Dense(self.classes, activation='softmax'))
 
@@ -88,7 +88,7 @@ class CustomCNN:
         accPlot.plot(arr, self.history.history["accuracy"], label="train_acc")
         accPlot.plot(arr, self.history.history["val_accuracy"], label="val_acc")
         accPlot.set_title("Training accuracy")
-        accPlot.set_xlabel("epoch #")
+        accPlot.set_xlabel("Epoch")
         accPlot.set_ylabel("accuracy")
         accPlot.set_xlim([1, self.epochs])
         accPlot.legend()
@@ -98,8 +98,8 @@ class CustomCNN:
         lossPlot.plot(arr, self.history.history["loss"], label="train_loss")
         lossPlot.plot(arr, self.history.history["val_loss"], label="val_loss")
         lossPlot.set_title("Training loss")
-        lossPlot.set_xlabel("epoch #")
-        lossPlot.set_ylabel("loss")
+        lossPlot.set_xlabel("Epoch")
+        lossPlot.set_ylabel("Loss")
         lossPlot.set_xlim([1, self.epochs])
         lossPlot.legend()
 

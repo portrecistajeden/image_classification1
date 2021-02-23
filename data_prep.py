@@ -7,7 +7,7 @@ from keras import layers
 import os
 from PIL import Image
 
-target_size = (100, 100)
+target_size = (200, 200)
 
 def getTargetSize():
     return target_size
