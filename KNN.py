@@ -2,7 +2,7 @@ import random
 
 from data_prep import *
 
-class KNN():
+class KNN:
     def __init__(self, trainDir, validationDir):
         self.trainDir = trainDir
         self.predictionsDir = validationDir

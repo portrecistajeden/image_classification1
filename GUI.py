@@ -38,7 +38,6 @@ class GraphTab(QWidget):
         layout.addWidget(self.graphCanvas)
         self.setLayout(layout)
 
-        #self.setMinimumHeight(400)
 
     def draw(self):
         self.graphCanvas.draw()
@@ -53,9 +52,9 @@ class Gui(QMainWindow):
     def __init__(self, parent=None):
         super(Gui, self).__init__(parent)
 
-        self.trainDir = "C:\\Users\\piawr\\Desktop\\inz\\image_classification1\\baza1\\FIDS30"
-        self.validationDir = "C:\\Users\\piawr\\Desktop\\inz\\image_classification1\\baza1\\Validation"
-        self.predictDir = "C:\\Users\\piawr\\Desktop\\inz\\image_classification1\\baza1\\test"
+        self.trainDir = ""
+        self.validationDir = ""
+        self.predictDir = ""
 
         self.algorithmFlag = 0
 
@@ -117,7 +116,6 @@ class Gui(QMainWindow):
         self.optimizer.addItem('adam')
         self.optimizer.addItem('rmsprop')
 
-
         #right panel
         self.graphs = GraphsTabs()
 
@@ -135,7 +133,6 @@ class Gui(QMainWindow):
     def prepare_gui(self):
         self.setWindowTitle('inzynierka')
         self.setBaseSize(1200, 800)
-        #self.setMinimumSize(900, 700)
 
         left_panel = QVBoxLayout()
         left_panel.setAlignment(Qt.AlignTop)
@@ -161,7 +158,6 @@ class Gui(QMainWindow):
         left_part.addWidget(cnnParametersFrame)
 
         left_panel.addLayout(left_part)
-
 
         right_panel = QGridLayout()
         label1 = QLabel('Graphs for your algoritm')
@@ -291,26 +287,27 @@ class Gui(QMainWindow):
         self.graphs.setTabEnabled(2, False)
 
     def createClick(self):
-        if self.simpleCNN.isChecked():
-            self.knn.setEnabled(False)
-            self.customCNN.setEnabled(False)
+        if self.trainDir != "" and self.validationDir != "" and self.predictDir != "":
+            if self.simpleCNN.isChecked():
+                self.knn.setEnabled(False)
+                self.customCNN.setEnabled(False)
 
-            self.chosenAlgorithm = CNN(self.trainDir, self.validationDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
+                self.chosenAlgorithm = CNN(self.trainDir, self.validationDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
 
-        elif self.knn.isChecked():
-            self.simpleCNN.setEnabled(False)
-            self.customCNN.setEnabled(False)
+            elif self.knn.isChecked():
+                self.simpleCNN.setEnabled(False)
+                self.customCNN.setEnabled(False)
 
-            self.chosenAlgorithm = KNN(self.trainDir, self.validationDir)
+                self.chosenAlgorithm = KNN(self.trainDir, self.validationDir)
 
-        elif self.customCNN.isChecked():
-            self.simpleCNN.setEnabled(False)
-            self.knn.setEnabled(False)
+            elif self.customCNN.isChecked():
+                self.simpleCNN.setEnabled(False)
+                self.knn.setEnabled(False)
 
-            self.chosenAlgorithm = CustomCNN(self.trainDir, self.validationDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
+                self.chosenAlgorithm = CustomCNN(self.trainDir, self.validationDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
 
-        self.chosenAlgorithm.createModel()
-        self.trainButton.setEnabled(True)
+            self.chosenAlgorithm.createModel()
+            self.trainButton.setEnabled(True)
 
 
 
@@ -380,17 +377,17 @@ class Gui(QMainWindow):
         file = dlg.getExistingDirectory(self, 'Select directory to save the model')
         if file != "":
             loadPath = file
+        if self.trainDir != "" and self.validationDir != "" and self.predictDir != "":
+            if self.algorithmFlag == 1:
+                self.chosenAlgorithm = CNN(self.trainDir, self.validationDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
+                self.chosenAlgorithm.loadModel(loadPath)
+            elif self.algorithmFlag == 3:
+                self.chosenAlgorithm = CustomCNN(self.trainDir, self.validationDir, self.predictDir, self.optimizer.currentText(), self.consolePrint)
+                self.chosenAlgorithm.loadModel(loadPath)
 
-        if self.algorithmFlag == 1:
-            self.chosenAlgorithm = CNN(self.trainDir, self.validationDir)
-            self.chosenAlgorithm.loadModel(loadPath)
-        elif self.algorithmFlag == 3:
-            self.chosenAlgorithm = CustomCNN(self.trainDir, self.validationDir, self.consolePrint)
-            self.chosenAlgorithm.loadModel(loadPath)
-
-        self.saveModelButton.setEnabled(True)
-        self.trainButton.setEnabled(True)
-        self.evaluateButton.setEnabled(True)
+            self.saveModelButton.setEnabled(True)
+            self.trainButton.setEnabled(True)
+            self.evaluateButton.setEnabled(True)
 
 
 class LoadDataWindow(QMainWindow):

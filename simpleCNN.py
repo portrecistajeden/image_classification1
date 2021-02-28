@@ -1,37 +1,29 @@
-# Placeholder for validation data
-# To do: Change this later
 import io
 import random
 from contextlib import redirect_stdout
 
 from keras.preprocessing.image import ImageDataGenerator
 
-# Used to create model
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout
 import tensorflow as tf
 
-# Used to show graphs
 import numpy as np
 import matplotlib.pyplot as plt
 
-# Used to load data
 from data_prep import *
 
-
-class CNN():
-    def __init__(self, trainDir, testDir, predictDir, optimizer, console):
+class CNN:
+    def __init__(self, trainDir, validationDir, predictDir, optimizer, console):
 
         # Load data form data_prep file
         self.train_data = load_data(trainDir)
-        self.validation_data = load_data(testDir)
+        self.validation_data = load_data(validationDir)
         self.prediction_data_batches, self.prediction_data = load_prediction_data(predictDir)
         self.sorted_labels = get_sorted_labels(trainDir)
         self.console = console
         self.optimizer = optimizer
 
-        # Useful variables
-        # To do: let user change this
         self.classes = getNumberOfClasses(trainDir)
         self.width = 200
         self.height = 200
@@ -60,7 +52,6 @@ class CNN():
         with redirect_stdout(f):
             self.results = self.model.evaluate(self.validation_data, batch_size=32)
         self.console.append(f.getvalue())
-        # self.results = self.model.evaluate(self.validation_data, batch_size=32)
 
     def saveModel(self, path):
         self.model.save(path)

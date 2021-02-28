@@ -6,28 +6,24 @@ import keras
 import tensorflow as tf
 from keras.preprocessing.image import ImageDataGenerator
 
-# Used to create model
 from keras.models import Sequential
 from keras.layers import Dense, Conv2D, MaxPooling2D, Flatten, Dropout, Input
 
-# Used to show graphs
 import numpy as np
 import matplotlib.pyplot as plt
 
 from data_prep import *
 
-
 class CustomCNN:
     def __init__(self, trainDir, testDir, predictDir, optimizer, console):
-        # Load data form data_prep file
+
         self.train_data = load_dataCustom(trainDir)
         self.validation_data = load_dataCustom(testDir)
         self.prediction_data_batches, self.prediction_data = load_prediction_data(predictDir)
         self.sorted_labels = get_sorted_labels(trainDir)
         self.console = console
         self.optimizer = optimizer
-        # Useful variables
-        # To do: let user change this
+
         self.classes = getNumberOfClasses(trainDir)
         self.width = 200
         self.height = 200
